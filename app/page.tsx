@@ -65,7 +65,7 @@ export default function Home() {
       description: "Vehicle safety system using Python Flask and Flutter with RFID authentication and alcohol detection integration.",
       image: "/images/digilicencce.jpg",
       tech: ["Python", "Flask", "Flutter", "Arduino"],
-      link: "#"
+      link: "https://github.com/sufailn/SmartLicence"
     },
     {
       title: "Glideway Tourism",
