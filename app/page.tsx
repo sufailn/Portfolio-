@@ -64,8 +64,8 @@ export default function Home() {
       link: "https://github.com/sufailn/SmartLicence"
     },
     {
-      title: "Glideway Tourism",
-      description: "Dynamic travel platform for seamless tour planning and booking with optimized performance and user engagement.",
+      title: "Glideway Tourism ",
+      description: "Dynamic travel platform for seamless tour planning and booking with optimized performance and user engagement .",
       image: "images/image 24.png",
       tech: ["React", "Node.js", "MongoDB"],
       link: "https://www.glidewaytourism.com/"
