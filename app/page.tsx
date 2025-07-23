@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Navbar } from '@/components/navbar';
+import { ContactForm } from '@/components/contact/contact-form';
 import { 
   Github, 
   Linkedin, 
@@ -34,11 +35,6 @@ export default function Home() {
     triggerOnce: true,
     threshold: 0.1,
   });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success('Message sent successfully!');
-  };
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -378,17 +374,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Input placeholder="Name" className="bg-card/50" />
-                  <Input placeholder="Email" type="email" className="bg-card/50" />
-                </div>
-                <Input placeholder="Subject" className="bg-card/50" />
-                <Textarea placeholder="Message" className="bg-card/50 min-h-[150px]" />
-                <Button type="submit" className="w-full">
-                  Send Message <Send className="ml-2 h-4 w-4" />
-                </Button>
-              </form>
+              <ContactForm />
             </div>
           </div>
         </motion.div>
