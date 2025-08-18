@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import {ExternalLink}from "lucide-react";
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 const Projects=({projects}:any)=>{
 
     const containerVariants = {
@@ -35,10 +36,11 @@ return(
         className="group relative overflow-hidden rounded-lg"
       >
         <div className="relative h-64 overflow-hidden rounded-lg">
-          <img
+          <Image
             src={project.image}
             alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-6">

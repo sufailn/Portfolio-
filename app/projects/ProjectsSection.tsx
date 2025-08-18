@@ -1,7 +1,10 @@
-import Projects from './projects';
+import { getProjectData } from '@/sanity/lib/queries';
+import Projects from '@/components/project/projects';
+import React from 'react'; 
+import { type SanityDocument } from "next-sanity";
 
-export default function Project() {
-  const projects = [
+const fallbackProjects = [
+  
     {
       title: "GlideAway Migration Service",
       description: "A responsive web application for Visa Services business using modern web technologies and optimized user experience.",
@@ -58,10 +61,17 @@ export default function Project() {
       tech: ["Next.js", "Tailwind CSS", "React"],
       link: "https://thelawyersworld.vercel.app/"
     },
-  ];
+  
 
-  return (
-    <Projects projects={projects} />
-  );
-}
+  // Add more fallback projects as needed
+];
 
+
+// This component fetches project data from Sanity and displays it using the Projects component
+// If no projects are found, it uses a fallback list of projects
+export default async function ProjectsSection() {
+  const projects = await getProjectData();
+  console.log("Sanity projects:", projects); // Debug log
+  const displayProjects = projects && projects.length > 0 ? projects : fallbackProjects;
+  return <Projects projects={displayProjects} />;
+} 
