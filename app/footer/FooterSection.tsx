@@ -1,4 +1,32 @@
-import { Github, Linkedin, Mail } from 'lucide-react';
+"use client"
+
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
+
+const socialLinks = [
+  {
+    icon: <Github className="w-5 h-5" />,
+    href: "https://github.com/sufailn",
+    label: "GitHub"
+  },
+  {
+    icon: <Linkedin className="w-5 h-5" />,
+    href: "https://www.linkedin.com/in/sufail-n/",
+    label: "LinkedIn"
+  },
+  {
+    icon: <Twitter className="w-5 h-5" />,
+    href: "https://twitter.com/yourusername",
+    label: "Twitter"
+  },
+  {
+    icon: <Mail className="w-5 h-5" />,
+    href: "mailto:your.email@example.com",
+    label: "Email"
+  }
+];
 
 export default function FooterSection() {
   return (

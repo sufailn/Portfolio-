@@ -5,6 +5,27 @@ import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
 import { Github, Linkedin, Mail, Phone } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
+import Image from 'next/image';
+import { ArrowRight, Code2, Laptop, Rocket } from 'lucide-react';
+import Link from 'next/link';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0
+  }
+};
 
 export default function HeroSection() {
   const [heroRef, heroInView] = useInView({
@@ -12,7 +33,7 @@ export default function HeroSection() {
     threshold: 0.1,
   });
   return (
-    <section 
+    <section
       ref={heroRef}
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden pt-16"
     >
@@ -31,7 +52,7 @@ export default function HeroSection() {
           />
         </h1>
         <p className="text-muted-foreground text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-          MCA graduate specializing in MEAN stack, React, Next.js, and Tailwind CSS. 
+          MCA graduate specializing in MEAN stack, React, Next.js, and Tailwind CSS.
           Building scalable web applications with a focus on performance and user experience.
         </p>
         <div className="flex gap-4 justify-center mb-8">
