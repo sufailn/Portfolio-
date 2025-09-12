@@ -34,7 +34,17 @@ export default function FooterSection() {
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">Sufail Ahammed N</h3>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary/20">
+                <Image
+                  src="/images/model_bw.png"
+                  alt="Sufail Ahammed N"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <h3 className="text-xl font-bold">Sufail Ahammed N</h3>
+            </div>
             <p className="text-muted-foreground">
               Full Stack Developer specializing in creating beautiful and functional web applications.
             </p>
