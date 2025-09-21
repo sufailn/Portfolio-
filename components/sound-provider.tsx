@@ -7,15 +7,29 @@ type SoundContextType = {
     toggleSound: () => void
     playClickSound: () => void
     isInitialized: boolean
+    isLoading: boolean
 }
 
 const SoundContext = createContext<SoundContextType | undefined>(undefined)
 
 export function SoundProvider({ children }: { children: ReactNode }) {
+    // Start with a consistent value for server-side rendering
     const [isSoundEnabled, setIsSoundEnabled] = useState(false)
     const [isInitialized, setIsInitialized] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const backgroundAudioRef = useRef<HTMLAudioElement | null>(null)
     const clickAudioRef = useRef<HTMLAudioElement | null>(null)
+
+    // Add useEffect to handle client-side initialization
+    useEffect(() => {
+        // After component mounts, we're in client-side rendering
+        // Simulate a loading state for a smoother user experience
+        const timer = setTimeout(() => {
+            setIsLoading(false)
+        }, 1500)
+
+        return () => clearTimeout(timer)
+    }, [])
 
     // Lazy initialize audio elements only after user interaction
     const initializeAudio = () => {
@@ -29,9 +43,9 @@ export function SoundProvider({ children }: { children: ReactNode }) {
             bgAudio.preload = 'none' // Don't preload audio
             backgroundAudioRef.current = bgAudio
 
-            // Click sound for interactions
-            const clickSound = new Audio('/sounds/click.mp3')
-            clickSound.volume = 0.3
+            // Click sound for interactions - using Apple-style keyboard sound
+            const clickSound = new Audio('/sounds/keyboard-click.mp3')
+            clickSound.volume = 0.2 // Lower volume for softer sound
             clickSound.preload = 'none' // Don't preload audio
             clickAudioRef.current = clickSound
 
@@ -94,7 +108,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     }, [])
 
     return (
-        <SoundContext.Provider value={{ isSoundEnabled, toggleSound, playClickSound, isInitialized }}>
+        <SoundContext.Provider value={{ isSoundEnabled, toggleSound, playClickSound, isInitialized, isLoading }}>
             {children}
         </SoundContext.Provider>
     )

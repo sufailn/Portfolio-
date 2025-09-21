@@ -11,8 +11,9 @@ const Header = () => {
     const [time, setTime] = useState<string>("")
     const [date, setDate] = useState<string>("")
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [mounted, setMounted] = useState(false)
     const { theme, setTheme } = useTheme()
-    const { isSoundEnabled, toggleSound, playClickSound } = useSound()
+    const { isSoundEnabled, toggleSound, playClickSound, isLoading } = useSound()
 
     // Menu items inspired by bjornflow.com
     const menuItems = [
@@ -26,6 +27,7 @@ const Header = () => {
     const [amPm, setAmPm] = useState<string>("AM")
 
     useEffect(() => {
+        setMounted(true)
         const updateTime = () => {
             const now = new Date()
             const hours24 = now.getHours()
@@ -137,7 +139,9 @@ const Header = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <span className="mr-2 hidden sm:inline">TURN {isSoundEnabled ? "OFF" : "ON"} SOUND</span>
+                            {mounted && (
+                                <span className="mr-2 hidden sm:inline">TURN {isSoundEnabled ? "OFF" : "ON"} SOUND</span>
+                            )}
                             {isSoundEnabled ? (
                                 <Volume2 className="h-4 w-4" />
                             ) : (
@@ -227,7 +231,9 @@ const Header = () => {
                                 }}
                                 className="flex items-center text-sm text-white/70 hover:text-white"
                             >
-                                <span className="mr-2">SOUND {isSoundEnabled ? "OFF" : "ON"}</span>
+                                {mounted && (
+                                    <span className="mr-2">SOUND {isSoundEnabled ? "OFF" : "ON"}</span>
+                                )}
                                 {isSoundEnabled ? (
                                     <Volume2 className="h-4 w-4" />
                                 ) : (

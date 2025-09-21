@@ -216,7 +216,7 @@ export default function HeroSection() {
             >
               <social.icon className="h-5 w-5" />
             </a>
-          ))}
+          ))} 
           <div className="h-20 w-px bg-white/20 mx-auto"></div>
         </motion.div>
       </div>

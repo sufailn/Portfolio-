@@ -5,6 +5,10 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import Header from '@/components/header';
 import { SoundProvider } from '@/components/sound-provider';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the AppLoader to avoid hydration issues
+const AppLoaderClient = dynamic(() => import('./AppLoader'), { ssr: false });
 
 // Space Grotesk font similar to bjornflow.com
 const spaceGrotesk = Space_Grotesk({
@@ -46,6 +50,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SoundProvider>
+            {/* App Loader */}
+            <AppLoaderClient />
+
             <Header />
             <main className="pt-16">
               {children}

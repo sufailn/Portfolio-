@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Calendar, Clock, Briefcase, GraduationCap, MapPin } from 'lucide-react';
+import { AnimatedText, AnimatedSentence, AnimatedLetters } from '@/components/ui/animated-text';
+import { useSound } from '@/components/sound-provider';
 
 const timeline = [
     {
@@ -88,6 +90,7 @@ const dotVariants = {
 const RealtimeClock = () => {
     const [time, setTime] = useState<string>("");
     const [date, setDate] = useState<string>("");
+    const { playClickSound } = useSound();
 
     useEffect(() => {
         const updateTime = () => {
@@ -117,6 +120,8 @@ const RealtimeClock = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center"
+            onClick={() => playClickSound()}
+            whileHover={{ scale: 1.05 }}
         >
             <div className="glassmorphism-clock text-center px-4 py-2 rounded-xl flex flex-col items-center backdrop-blur-md bg-primary/5 border border-primary/20 shadow-lg">
                 <div className="flex items-center gap-2 mb-1">
@@ -130,24 +135,28 @@ const RealtimeClock = () => {
 };
 
 export default function CareerSection() {
+    const { playClickSound } = useSound();
+
     return (
         <section id="career" className="py-20 md:py-32 px-4 bg-gradient-to-b from-background to-background/50">
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-center mb-12 md:mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        viewport={{ once: true }}
-                        className="mb-4 md:mb-0"
-                    >
-                        <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70 mb-2 font-space-grotesk">
-                            Career Journey
-                        </h2>
-                        <p className="text-white/70 max-w-xl">
-                            My professional timeline showcasing my experience and growth in the tech industry
-                        </p>
-                    </motion.div>
+                    <div className="mb-4 md:mb-0">
+                        <AnimatedLetters
+                            text="Career Journey"
+                            variant="header"
+                            className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70 mb-2 font-space-grotesk"
+                            initialDelay={0.1}
+                            staggerDelay={0.03}
+                        />
+                        <AnimatedSentence
+                            text="My professional timeline showcasing my experience and growth in the tech industry"
+                            variant="body"
+                            className="text-white/70 max-w-xl"
+                            initialDelay={0.5}
+                            staggerDelay={0.02}
+                        />
+                    </div>
 
                     <RealtimeClock />
                 </div>
@@ -184,6 +193,7 @@ export default function CareerSection() {
                                 // Mobile layout adjustments
                                 'flex-row pl-[40px] sm:pl-[60px] md:pl-0'
                                 }`}
+                            onClick={() => playClickSound()}
                         >
                             {/* Timeline content */}
                             <motion.div
@@ -202,20 +212,40 @@ export default function CareerSection() {
                                     </div>
 
                                     <div className="flex items-center mb-3 gap-2 justify-start">
-                                        <div className={`p-2 rounded-full ${item.type === 'work' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400'}`}>
+                                        <motion.div
+                                            className={`p-2 rounded-full ${item.type === 'work' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400'}`}
+                                            whileHover={{ rotate: [0, -10, 10, -5, 0], scale: 1.1 }}
+                                            transition={{ duration: 0.5 }}
+                                            onClick={() => playClickSound()}
+                                        >
                                             {item.type === 'work' ? <Briefcase className="w-4 h-4" /> : <GraduationCap className="w-4 h-4" />}
-                                        </div>
-                                        <span className={`px-3 py-1 text-xs font-semibold rounded-full ${item.type === 'work' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400'}`}>
+                                        </motion.div>
+                                        <motion.span
+                                            className={`px-3 py-1 text-xs font-semibold rounded-full ${item.type === 'work' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400'}`}
+                                            whileHover={{ scale: 1.05 }}
+                                        >
                                             {item.period}
-                                        </span>
+                                        </motion.span>
                                     </div>
-                                    <h3 className="text-xl font-semibold text-primary mb-2 font-space-grotesk">{item.title}</h3>
-                                    <p className="text-base text-white mb-1 font-space-grotesk">{item.organization}</p>
+                                    <AnimatedText
+                                        text={item.title}
+                                        variant="subheader"
+                                        className="text-xl font-semibold text-primary mb-2 font-space-grotesk"
+                                    />
+                                    <AnimatedText
+                                        text={item.organization}
+                                        variant="body"
+                                        className="text-base text-white mb-1 font-space-grotesk"
+                                    />
                                     <p className="text-sm text-muted-foreground/70 flex items-center gap-1 mb-3">
                                         <MapPin className="w-3 h-3 text-muted-foreground/50" />
                                         <span>{item.location}</span>
                                     </p>
-                                    <p className="text-sm text-white/80 relative z-10">{item.description}</p>
+                                    <AnimatedSentence
+                                        text={item.description}
+                                        className="text-sm text-white/80 relative z-10"
+                                        staggerDelay={0.01}
+                                    />
                                 </div>
                             </motion.div>
 
@@ -225,6 +255,7 @@ export default function CareerSection() {
                                     variants={dotVariants}
                                     whileHover={{ scale: 1.2 }}
                                     className="w-5 md:w-6 h-5 md:h-6 rounded-full bg-gradient-to-r from-primary to-primary/80 ring-4 ring-primary/10 shadow-lg shadow-primary/20 backdrop-blur-sm border border-white/20"
+                                    onClick={() => playClickSound()}
                                 />
                             </div>
 
@@ -234,6 +265,7 @@ export default function CareerSection() {
                                     variants={dotVariants}
                                     whileHover={{ scale: 1.2 }}
                                     className="w-5 h-5 rounded-full bg-gradient-to-r from-primary to-primary/80 ring-4 ring-primary/10 shadow-lg shadow-primary/20 backdrop-blur-sm border border-white/20"
+                                    onClick={() => playClickSound()}
                                 />
                             </div>
 
