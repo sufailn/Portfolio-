@@ -37,14 +37,14 @@ const FloatingIcon = ({ icon: Icon, delay, duration, x, y }: FloatingIconProps) 
   const controls = useAnimationControls();
 
   useEffect(() => {
+    // Simplified animation with reduced complexity
     controls.start({
-      y: [y, y - 20, y],
-      x: [x, x + 10, x],
+      y: [y, y - 10, y],
       transition: {
-        duration,
+        duration: Math.min(duration, 3), // Cap duration to improve performance
         repeat: Infinity,
         repeatType: "reverse",
-        delay,
+        delay: Math.min(delay, 0.5), // Cap delay to improve initial load
       },
     });
   }, [controls, delay, duration, x, y]);
@@ -66,107 +66,159 @@ export default function HeroSection() {
     threshold: 0.1,
   });
 
-  const floatingIcons: FloatingIconProps[] = [
-    { icon: Code2, delay: 0, duration: 4, x: 15, y: 20 },
-    { icon: BracesIcon, delay: 1, duration: 5, x: 85, y: 30 },
-    { icon: Terminal, delay: 2, duration: 4.5, x: 25, y: 80 },
-    { icon: Hash, delay: 1.5, duration: 5.5, x: 75, y: 70 },
-    { icon: Database, delay: 2.5, duration: 4.8, x: 50, y: 50 },
-  ];
+  // We're not using floating icons for the bjornflow.com style
+  const floatingIcons: FloatingIconProps[] = [];
 
   return (
     <section
       ref={heroRef}
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+      id="home"
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden pt-16"
     >
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-radial from-primary/5 via-transparent to-transparent blur-2xl" />
-        <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-radial from-secondary/5 via-transparent to-transparent blur-2xl" />
+      {/* Background - Simplified black style like bjornflow.com */}
+      <div className="absolute inset-0 bg-black">
+        {/* Optional subtle grid overlay */}
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-20"></div>
       </div>
-
-      {/* Floating Icons */}
-      {floatingIcons.map((iconProps, index) => (
-        <FloatingIcon key={index} {...iconProps} />
-      ))}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-10 md:gap-20">
           <motion.div
+            className="md:w-1/2"
             initial={{ opacity: 0, y: 20 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              <span className="block mb-2">Hi, I am</span>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60">
+            {/* Intro text with bjornflow style */}
+            <motion.p
+              className="text-white/70 mb-4 font-normal tracking-wide"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              Hi, I&apos;m Sufail Ahammed N
+            </motion.p>
+
+            {/* Main heading with large, space-grotesk font */}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 tracking-tight font-space-grotesk leading-tight">
+              <motion.span
+                className="block text-white"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                CREATIVE
+              </motion.span>
+              <motion.span
+                className="block text-white"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
                 <TypeAnimation
                   sequence={[
-                    'Sufail Ahammed N',
-                    1000,
-                    'Full-Stack Developer',
-                    1000,
-                    'MERN Stack Developer',
-                    1000,
-                    'React Developer',
-                    1000,
-                    'Next.js Developer',
-                    1000,
-                    'Open Source Contributor',
-                    1000
+                    'WEBFLOW',
+                    1500,
+                    'NEXTJS',
+                    1500,
+                    'REACT',
+                    1500,
+                    'MERN STACK',
+                    1500,
                   ] as const}
                   wrapper="span"
-                  speed={50}
+                  speed={30}
                   repeat={Infinity}
                 />
-              </span>
+              </motion.span>
+              <motion.span
+                className="block text-white"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                DEVELOPER
+              </motion.span>
             </h1>
 
-            <p className="text-muted-foreground text-lg md:text-xl mb-8">
-              MCA graduate with passion for creating user-friendly web applications.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Button
-                variant="default"
-                size="lg"
-                className="bg-primary hover:bg-primary/90"
-                asChild
+            {/* Certification badge - like bjornflow.com */}
+            <div className="flex items-center mt-8 gap-6">
+              <motion.div
+                className="w-full md:w-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
               >
-                <a href="#contact" className="flex items-center gap-2">
-                  Get in Touch
-                  <Mail className="h-4 w-4" />
-                </a>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <a href="#projects">View Projects</a>
-              </Button>
+                <div className="flex items-center space-x-4">
+                  <div className="w-1 h-1 bg-white rounded-full"></div>
+                  <div className="h-px w-20 md:w-40 bg-gradient-to-r from-white to-transparent"></div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-white/80 text-xs md:text-sm uppercase tracking-wider">MERN STACK CERTIFIED DEVELOPER</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
 
-            <div className="flex gap-4 justify-center">
-              {[
-                { href: "https://github.com/sufailn", icon: Github, label: "GitHub" },
-                { href: "https://linkedin.com/in/sufail-ahammed-n", icon: Linkedin, label: "LinkedIn" },
-                { href: "mailto:sufailahammed316@gmail.com", icon: Mail, label: "Email" },
-                { href: "tel:+919562026070", icon: Phone, label: "Phone" }
-              ].map((social: { href: string; icon: React.ElementType; label: string }, index) => (
-                <motion.a
-                  key={index}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <Button variant="ghost" size="icon" className="hover:bg-primary/10 hover:text-primary">
-                    <social.icon className="h-5 w-5" />
-                  </Button>
-                </motion.a>
-              ))}
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white/20 hover:bg-white/5 text-white rounded-none px-8 py-6 h-auto"
+                asChild
+              >
+                <a href="#contact" className="flex items-center gap-2 uppercase tracking-wider text-sm">
+                  Get In Touch
+                </a>
+              </Button>
+            </div>
+          </motion.div>
+
+          {/* Right side image */}
+          <motion.div
+            className="md:w-1/2 relative h-80 md:h-[500px]"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, type: "tween" }}
+          >
+            <div className="relative w-full h-full">
+              <Image
+                src="/images/model_bw.png"
+                alt="Sufail Ahammed N"
+                fill
+                className="object-contain"
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+                quality={75}
+              />
             </div>
           </motion.div>
         </div>
+
+        {/* Social icons - bottom fixed position on right side */}
+        <motion.div
+          className="fixed bottom-8 right-0 z-10 hidden md:flex flex-col gap-6"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+        >
+          {[
+            { href: "https://github.com/sufailn", icon: Github, label: "GitHub" },
+            { href: "https://linkedin.com/in/sufail-ahammed-n", icon: Linkedin, label: "LinkedIn" },
+            { href: "mailto:sufailahammed316@gmail.com", icon: Mail, label: "Email" }
+          ].map((social, index) => (
+            <a
+              key={index}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors p-2"
+            >
+              <social.icon className="h-5 w-5" />
+            </a>
+          ))}
+          <div className="h-20 w-px bg-white/20 mx-auto"></div>
+        </motion.div>
       </div>
     </section>
   );
