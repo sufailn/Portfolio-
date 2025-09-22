@@ -1,6 +1,6 @@
 "use client"
 import { motion } from 'framer-motion';
-import { Mail, MapPin, Calendar, Github, Linkedin } from 'lucide-react';
+import { Mail, MapPin, Calendar, Github, Linkedin, MessageSquare } from 'lucide-react';
 import { ContactForm } from '@/components/contact/contact-form';
 
 const containerVariants = {
@@ -52,7 +52,7 @@ export default function ContactSection() {
                 <div>
                   <h3 className="text-xl font-medium mb-1 font-space-grotesk">Location</h3>
                   <p className="text-white/70">
-                    Calicut, Kerala, India
+                    Calicut, Kerala, India and Dubai, UAE
                   </p>
                 </div>
               </div>
@@ -74,6 +74,9 @@ export default function ContactSection() {
                 </a>
                 <a href="https://www.linkedin.com/in/sufailahammed" target="_blank" rel="noopener noreferrer" className="bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors">
                   <Linkedin className="w-6 h-6" />
+                </a>
+                <a href="https://wa.me/919562026070" target="_blank" rel="noopener noreferrer" className="bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors">
+                  <MessageSquare className="w-6 h-6" />
                 </a>
               </div>
             </div>

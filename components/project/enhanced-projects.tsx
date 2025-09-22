@@ -1,10 +1,12 @@
 "use client"
 
-import { motion, Variants } from 'framer-motion';
+import { useState } from 'react';
+import { motion, Variants, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSound } from '@/components/sound-provider';
 import { SoundButton } from '@/components/ui/sound-button';
+import ProjectDetails from './project-details';
 
 interface Project {
     title: string;
@@ -69,6 +71,29 @@ const imageVariants: Variants = {
 
 export default function Projects({ projects }: ProjectsProps) {
     const { playClickSound } = useSound();
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+    const handleProjectClick = (project: Project) => {
+        playClickSound();
+        const index = projects.findIndex(p => p.title === project.title);
+        setCurrentIndex(index >= 0 ? index : 0);
+        setSelectedProject(project);
+    };
+
+    const handleCloseProject = () => {
+        setSelectedProject(null);
+    };
+
+    const handleNavigate = (indexOrAction: number | 'all') => {
+        if (indexOrAction === 'all') {
+            setSelectedProject(null);
+            return;
+        }
+
+        setCurrentIndex(indexOrAction);
+        setSelectedProject(projects[indexOrAction]);
+    };
 
     return (
         <section id="projects" className="py-16 sm:py-24 px-4 bg-gradient-to-b from-background to-secondary/10">
@@ -102,7 +127,7 @@ export default function Projects({ projects }: ProjectsProps) {
                             variants={projectVariants}
                             whileHover="hover"
                             onHoverStart={() => playClickSound()}
-                            onClick={() => playClickSound()}
+                            onClick={() => handleProjectClick(project)}
                         >
                             <div className="h-full relative overflow-hidden rounded-xl">
                                 <motion.div variants={imageVariants} className="h-full w-full">
@@ -156,16 +181,12 @@ export default function Projects({ projects }: ProjectsProps) {
                                             </div>
                                             <SoundButton
                                                 className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium transform transition-all duration-300 group-hover:scale-105"
-                                                asChild
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleProjectClick(project);
+                                                }}
                                             >
-                                                <Link
-                                                    href={project.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    View Project
-                                                </Link>
+                                                View Project
                                             </SoundButton>
                                         </div>
                                     </div>
@@ -175,6 +196,20 @@ export default function Projects({ projects }: ProjectsProps) {
                     ))}
                 </motion.div>
             </div>
+
+            {/* Project details modal */}
+            <AnimatePresence>
+                {selectedProject && (
+                    <ProjectDetails
+                        project={selectedProject}
+                        onClose={handleCloseProject}
+                        onBack={handleCloseProject}
+                        allProjects={projects}
+                        currentIndex={currentIndex}
+                        onNavigate={handleNavigate}
+                    />
+                )}
+            </AnimatePresence>
         </section>
     );
 }
