@@ -9,18 +9,51 @@ export default function AppLoader() {
     const { isLoading } = useSound();
     const [shouldRender, setShouldRender] = useState(true);
     const [loadingProgress, setLoadingProgress] = useState(0);
+    const [currentText, setCurrentText] = useState('');
+    const [textIndex, setTextIndex] = useState(0);
+
+    const loadingTexts = [
+        "Preparing portfolio",
+        "Loading projects",
+        "Initializing experience",
+        "Almost ready",
+        "Setting up workspace"
+    ];
 
     // Simulate loading progress
     useEffect(() => {
         const interval = setInterval(() => {
             setLoadingProgress(prev => {
-                const newProgress = prev + Math.random() * 10;
+                const newProgress = prev + Math.random() * 5;
                 return newProgress > 100 ? 100 : newProgress;
             });
-        }, 150);
+        }, 100);
 
         return () => clearInterval(interval);
     }, []);
+
+    // Text typing effect
+    useEffect(() => {
+        const textInterval = setInterval(() => {
+            setTextIndex(prev => (prev + 1) % loadingTexts.length);
+        }, 2000);
+
+        return () => clearInterval(textInterval);
+    }, []);
+
+    useEffect(() => {
+        let i = 0;
+        const typing = setInterval(() => {
+            if (i <= loadingTexts[textIndex].length) {
+                setCurrentText(loadingTexts[textIndex].substring(0, i));
+                i++;
+            } else {
+                clearInterval(typing);
+            }
+        }, 50);
+
+        return () => clearInterval(typing);
+    }, [textIndex]);
 
     // Wait for a minimum loading time to show the loader
     useEffect(() => {
@@ -28,7 +61,7 @@ export default function AppLoader() {
             if (!isLoading && loadingProgress >= 100) {
                 setShouldRender(false);
             }
-        }, 2000);
+        }, 3000);
 
         return () => clearTimeout(minLoadingTime);
     }, [isLoading, loadingProgress]);
@@ -40,59 +73,43 @@ export default function AppLoader() {
                     className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50"
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.8 }}
+                    transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1.0] }}
                 >
-                    <motion.div className="flex flex-col items-center justify-center">
-                        <motion.div
-                            className="mb-12 relative w-28 h-28 md:w-36 md:h-36"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.5 }}
+                    <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+                    <motion.div className="flex flex-col items-center justify-center max-w-md px-4">
+                        <motion.h1
+                            className="text-xl md:text-2xl font-mono text-white/80 mb-16"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1.0] }}
                         >
-                            <Image
-                                src="/images/model_bw.png"
-                                alt="Sufail Ahammed N"
-                                fill
-                                className="object-contain rounded-full"
-                            />
+                            <span className="text-primary">SUFAIL</span>.DEV
+                        </motion.h1>
+
+                        <motion.div
+                            className="relative w-full h-[1px] bg-white/10 mb-8"
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            transition={{ duration: 2, ease: [0.25, 0.1, 0.25, 1.0] }}
+                        >
                             <motion.div
-                                className="absolute -inset-1 rounded-full border-2 border-primary border-dashed"
-                                animate={{ rotate: 360 }}
-                                transition={{
-                                    duration: 8,
-                                    repeat: Infinity,
-                                    ease: "linear"
-                                }}
+                                className="absolute top-0 left-0 h-full bg-primary"
+                                style={{ width: `${loadingProgress}%` }}
                             />
                         </motion.div>
 
-                        <motion.h1
-                            className="text-4xl md:text-5xl font-bold font-space-grotesk text-white mb-8"
+                        <motion.div
+                            className="flex justify-between w-full text-sm text-white/60 mb-12 font-mono"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
                         >
-                            Sufail Ahammed N
-                        </motion.h1>
-
-                        <div className="w-full max-w-md px-4">
-                            <div className="h-1 w-full bg-white/20 rounded-full overflow-hidden">
-                                <motion.div
-                                    className="h-full bg-primary rounded-full"
-                                    initial={{ width: "0%" }}
-                                    animate={{ width: `${loadingProgress}%` }}
-                                    transition={{ duration: 0.3 }}
-                                />
-                            </div>
-
-                            <div className="flex justify-between mt-2 text-sm text-white/60">
-                                <span>Loading experience</span>
-                                <span>{Math.round(loadingProgress)}%</span>
-                            </div>
-                        </div>
+                            <span className="h-6">{currentText}<span className="animate-pulse">_</span></span>
+                            <span className="text-xs">{Math.round(loadingProgress)}%</span>
+                        </motion.div>
 
                         <motion.div
-                            className="mt-12 grid grid-cols-3 gap-8 text-white/80"
+                            className="mt-12 flex flex-wrap justify-center gap-2 text-white/80"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5 }}

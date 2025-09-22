@@ -49,7 +49,7 @@ export default function FooterSection() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <div className="flex flex-col items-center space-y-4 py-4">
-          <h3 className="text-lg font-medium">Contact via {location}</h3>
+          <h3 className="text-lg font-mono uppercase tracking-tight">Contact via {location}</h3>
           <div className="flex space-x-4">
             <SoundButton variant="default" asChild>
               <a href={`tel:${phoneNumber.replace(/\s+/g, '')}`} className="flex items-center">
@@ -83,7 +83,7 @@ export default function FooterSection() {
                   className="object-cover"
                 />
               </div>
-              <h3 className="text-xl font-bold">Sufail Ahammed N</h3>
+              <h3 className="text-xl font-mono uppercase tracking-tight">Sufail Ahammed N</h3>
             </div>
             <p className="text-muted-foreground mb-4">
               Full Stack Developer specializing in creating beautiful and functional web applications.
@@ -94,7 +94,7 @@ export default function FooterSection() {
             </div>
           </div>
           <div>
-            <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+            <h3 className="text-xl font-mono uppercase tracking-tight mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
@@ -129,7 +129,7 @@ export default function FooterSection() {
             </ul>
           </div>
           <div>
-            <h3 className="text-xl font-bold mb-4">Connect</h3>
+            <h3 className="text-xl font-mono uppercase tracking-tight mb-4">Connect</h3>
             <div className="flex gap-4">
               <a
                 href="https://github.com/sufailn"
@@ -165,7 +165,7 @@ export default function FooterSection() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-border text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Sufail Ahammed N. All rights reserved.</p>
+          <p className="font-mono text-xs">&copy; {new Date().getFullYear()} SUFAIL AHAMMED N. ALL RIGHTS RESERVED.</p>
         </div>
       </div>
     </footer>

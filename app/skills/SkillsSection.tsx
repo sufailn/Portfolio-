@@ -23,24 +23,24 @@ const cardVariants = {
 
 export default function SkillsSection() {
   return (
-    <section id="skills" className="py-24 px-4 bg-gradient-to-b from-secondary/10 to-background relative overflow-hidden">
+    <section id="skills" className="py-24 px-4 bg-background border-t border-b border-border relative overflow-hidden">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
-        className="max-w-6xl mx-auto relative z-10"
+        className="max-w-7xl mx-auto relative z-10"
       >
-        <div className="text-center mb-16">
+        <div className="mb-16">
           <motion.h2
             variants={cardVariants}
-            className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70"
+            className="text-2xl font-mono uppercase tracking-tight mb-4"
           >
-            Professional Skills
+            TECHNOLOGY STACK
           </motion.h2>
           <motion.p
             variants={cardVariants}
-            className="text-muted-foreground max-w-3xl mx-auto"
+            className="text-muted-foreground max-w-3xl font-light"
           >
             Frontend Developer with 3+ years of experience building high-performance, production-ready web applications,
             specializing in modern frameworks and responsive design
@@ -104,7 +104,7 @@ export default function SkillsSection() {
 
         <motion.h3
           variants={cardVariants}
-          className="text-2xl font-semibold mt-20 mb-8 text-center"
+          className="text-2xl mt-20 mb-8 text-center text-primary"
         >
           Additional Skills
         </motion.h3>
