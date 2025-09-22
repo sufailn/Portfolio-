@@ -178,22 +178,130 @@ export default function HeroSection() {
             </div>
           </motion.div>
 
-          {/* Right side image */}
+          {/* Right side image with enhanced styling */}
           <motion.div
             className="md:w-1/2 relative h-80 md:h-[500px]"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, type: "tween" }}
+            initial={{ opacity: 0, scale: 0.9, x: 50 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 1.2, type: "spring", stiffness: 100, damping: 15 }}
           >
-            <div className="relative w-full h-full">
-              <Image
-                src="/images/model_bw.png"
-                alt="Sufail Ahammed N"
-                fill
-                className="object-contain"
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                quality={75}
+            <div className="relative w-full h-full group">
+              {/* Main image container with multiple effects */}
+              <div className="relative w-full h-full overflow-hidden">
+                <Image
+                  src="/images/model_bw.png"
+                  alt="Sufail Ahammed N"
+                  fill
+                  className="object-contain grayscale contrast-110 brightness-90 transition-all duration-1000 group-hover:brightness-100 group-hover:contrast-125"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  quality={85}
+                />
+
+                {/* Animated dotted overlay */}
+                <motion.div
+                  className="absolute inset-0 opacity-40 mix-blend-multiply"
+                  style={{
+                    backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)`,
+                    backgroundSize: '20px 20px',
+                  }}
+                  animate={{
+                    backgroundPosition: ['0px 0px', '20px 20px']
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
+
+                {/* Animated grid overlay */}
+                <motion.div
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '40px 40px',
+                  }}
+                  animate={{
+                    opacity: [0.1, 0.3, 0.1]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+
+                {/* Floating particles around image */}
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white/40 rounded-full"
+                    style={{
+                      left: `${20 + Math.random() * 60}%`,
+                      top: `${20 + Math.random() * 60}%`,
+                    }}
+                    animate={{
+                      y: [0, -10, 0],
+                      x: [0, 5, 0],
+                      opacity: [0.4, 0.8, 0.4],
+                      scale: [1, 1.2, 1]
+                    }}
+                    transition={{
+                      duration: 2 + Math.random() * 2,
+                      repeat: Infinity,
+                      delay: Math.random() * 2,
+                      ease: "easeInOut"
+                    }}
+                  />
+                ))}
+
+                {/* Gradient overlay for depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+
+                {/* Border frame effect */}
+                <motion.div
+                  className="absolute inset-4 border border-white/20 pointer-events-none"
+                  initial={{ opacity: 0, scale: 1.1 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 1.5, delay: 0.8 }}
+                >
+                  {/* Corner decorations */}
+                  <div className="absolute -top-1 -left-1 w-4 h-4 border-l-2 border-t-2 border-white/40"></div>
+                  <div className="absolute -top-1 -right-1 w-4 h-4 border-r-2 border-t-2 border-white/40"></div>
+                  <div className="absolute -bottom-1 -left-1 w-4 h-4 border-l-2 border-b-2 border-white/40"></div>
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 border-r-2 border-b-2 border-white/40"></div>
+                </motion.div>
+
+                {/* Scanning line effect */}
+                <motion.div
+                  className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/60 to-transparent"
+                  animate={{
+                    y: [0, 320, 0]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1
+                  }}
+                />
+              </div>
+
+              {/* Hover glow effect */}
+              <motion.div
+                className="absolute -inset-4 bg-gradient-to-r from-white/5 via-white/10 to-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none blur-xl"
+                animate={{
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
               />
             </div>
           </motion.div>

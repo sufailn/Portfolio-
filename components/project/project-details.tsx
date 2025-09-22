@@ -76,7 +76,7 @@ export default function ProjectDetails({
                     transition={{ duration: 0.3 }}
                 >
                     <motion.div
-                        className="relative bg-card/95 rounded-2xl shadow-xl max-w-5xl w-full max-h-[95vh] overflow-hidden flex flex-col"
+                        className="relative bg-white dark:bg-black text-black dark:text-white rounded-2xl shadow-xl max-w-5xl w-full max-h-[95vh] overflow-hidden flex flex-col"
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
@@ -100,7 +100,7 @@ export default function ProjectDetails({
 
                                 <div className="flex gap-2 items-center">
                                     <div className="h-2 w-2 bg-primary rounded-full"></div>
-                                    <h2 className="text-sm sm:text-lg font-mono uppercase truncate px-1 sm:px-0 tracking-tight">{project.title}</h2>
+                                    <h2 className="text-lg font-mono uppercase truncate px-1 sm:px-0 tracking-tight text-black dark:text-white">{project.title}</h2>
                                 </div>
                             </div>
 
@@ -138,7 +138,7 @@ export default function ProjectDetails({
                                 transition={{ delay: 0.2 }}
                             >
                                 <SoundButton
-                                    className="w-full flex items-center justify-center border border-white/20 bg-black/20 text-white py-3 rounded-md backdrop-blur-sm hover:bg-black/40 transition-colors"
+                                    className="w-full flex items-center justify-center border border-border bg-white/10 dark:bg-black/20 text-black dark:text-white py-3 rounded-md backdrop-blur-sm hover:bg-primary/10 transition-colors"
                                     onClick={() => {
                                         playClickSound();
                                         setShowSiteViewer(true);
@@ -157,7 +157,7 @@ export default function ProjectDetails({
                                             {project.tech.map((tech, index) => (
                                                 <motion.span
                                                     key={index}
-                                                    className="px-2 py-0.5 border border-border text-xs"
+                                                    className="px-2 py-0.5 border border-border text-xs text-black dark:text-white"
                                                     whileHover={{ backgroundColor: "rgba(var(--primary), 0.1)" }}
                                                 >
                                                     {tech}
@@ -174,7 +174,7 @@ export default function ProjectDetails({
                                     >
                                         <SoundButton
                                             size="sm"
-                                            className="inline-flex items-center border border-white/20 bg-black/20 text-white hover:bg-black/40 transition-colors"
+                                            className="inline-flex items-center border border-black/20 dark:border-white/20 bg-white/20 dark:bg-black/20 text-black dark:text-white hover:bg-white/40 dark:hover:bg-black/40 transition-colors"
                                             onClick={() => {
                                                 playClickSound();
                                                 setShowSiteViewer(true);
@@ -206,27 +206,27 @@ export default function ProjectDetails({
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                                     <div className="md:col-span-1">
                                         <div className="space-y-2">
-                                            <h4 className="text-sm font-mono opacity-70 uppercase">Description</h4>
+                                            <h4 className="text-sm font-mono opacity-70 uppercase text-black dark:text-white">Description</h4>
                                             <motion.div
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.35 }}
                                             >
-                                                <p className="text-sm sm:text-base">{project.description}</p>
+                                                <p className="text-sm sm:text-base text-black dark:text-white">{project.description}</p>
                                             </motion.div>
                                         </div>
                                     </div>
 
                                     <div className="md:col-span-2">
                                         <div className="space-y-2">
-                                            <h4 className="text-sm font-mono opacity-70 uppercase">Key Features</h4>
+                                            <h4 className="text-sm font-mono opacity-70 uppercase text-black dark:text-white">Key Features</h4>
                                             <motion.div
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.4 }}
                                                 className="space-y-1"
                                             >
-                                                <ul className="list-disc list-inside space-y-1 sm:space-y-2 text-sm sm:text-base">
+                                                <ul className="list-disc list-inside space-y-1 sm:space-y-2 text-sm sm:text-base text-black dark:text-white">
                                                     <li>Responsive design ensuring perfect display across all device sizes</li>
                                                     <li>Optimized performance with efficient loading strategies</li>
                                                     <li>Intuitive user interface with smooth animations</li>

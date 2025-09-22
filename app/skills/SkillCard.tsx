@@ -30,7 +30,7 @@ export default function SkillCard({ icon, title, skills }: { icon: React.ReactNo
     >
       <div className="h-full flex flex-col">
         <div className="mb-3">
-          <h3 className="text-lg font-mono uppercase tracking-tight mb-1">{title}</h3>
+          <h3 className="text-lg font-mono uppercase tracking-tight mb-1 text-black dark:text-white">{title}</h3>
           <div className="h-[1px] w-12 bg-border"></div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-3">
@@ -41,7 +41,7 @@ export default function SkillCard({ icon, title, skills }: { icon: React.ReactNo
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
               variants={skillItemVariants}
-              className="border border-border px-3 py-2 hover:border-primary/50 transition-colors cursor-default"
+              className="border border-border px-3 py-2 hover:border-primary/50 transition-colors cursor-default text-black dark:text-white"
             >
               <span className="font-mono text-sm">{skill.name}</span>
             </motion.div>

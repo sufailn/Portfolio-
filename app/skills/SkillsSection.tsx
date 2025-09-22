@@ -34,7 +34,7 @@ export default function SkillsSection() {
         <div className="mb-16">
           <motion.h2
             variants={cardVariants}
-            className="text-2xl font-mono uppercase tracking-tight mb-4"
+            className="text-2xl font-mono uppercase tracking-tight mb-4 text-black dark:text-white"
           >
             TECHNOLOGY STACK
           </motion.h2>
