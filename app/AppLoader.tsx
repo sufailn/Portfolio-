@@ -37,24 +37,46 @@ export default function AppLoader() {
         "Ready to launch"
     ];
 
-    // Enhanced loading progress simulation
+    // Start counter animations immediately when component mounts
+    useEffect(() => {
+        // Start counter animations with specified delays
+        animate(experienceCount, 5, { duration: 3, ease: "easeOut", delay: 0.1 });
+        animate(projectsCount, 30, { duration: 3.5, ease: "easeOut", delay: 0.2 });
+        animate(technologiesCount, 15, { duration: 3.8, ease: "easeOut", delay: 0.4 });
+    }, [experienceCount, projectsCount, technologiesCount]);
+
+    // Enhanced loading progress simulation with faster initial progress
     useEffect(() => {
         let progressTimer: NodeJS.Timeout;
         let currentProgress = 0;
 
         const updateProgress = () => {
-            const increment = Math.random() * 3 + 1; // 1-4% increments
+            // Faster initial loading (bigger increments in the beginning)
+            let increment;
+            if (currentProgress < 30) {
+                increment = Math.random() * 8 + 5; // 5-13% increments for fast start
+            } else if (currentProgress < 70) {
+                increment = Math.random() * 4 + 2; // 2-6% increments for middle
+            } else {
+                increment = Math.random() * 2 + 0.5; // 0.5-2.5% increments for end
+            }
+
             currentProgress = Math.min(currentProgress + increment, 100);
             setLoadingProgress(currentProgress);
 
             // Animate the counter
             animate(count, currentProgress, {
-                duration: 0.5,
+                duration: 0.3,
                 ease: "easeOut"
             });
 
             if (currentProgress < 100) {
-                const delay = Math.random() * 200 + 100; // 100-300ms delay
+                // Shorter delays for faster progression
+                const delay = currentProgress < 30 ?
+                    Math.random() * 80 + 40 : // 40-120ms for fast start
+                    currentProgress < 70 ?
+                        Math.random() * 150 + 80 : // 80-230ms for middle
+                        Math.random() * 250 + 150; // 150-400ms for end
                 progressTimer = setTimeout(updateProgress, delay);
             } else {
                 setIsComplete(true);
@@ -63,9 +85,7 @@ export default function AppLoader() {
 
         updateProgress();
         return () => clearTimeout(progressTimer);
-    }, [count]);
-
-    // Enhanced text cycling with better timing
+    }, [count]);    // Enhanced text cycling with better timing
     useEffect(() => {
         if (loadingProgress >= 100) return;
 
@@ -109,18 +129,13 @@ export default function AppLoader() {
     // Enhanced exit timing
     useEffect(() => {
         if (isComplete && !isLoading) {
-            // Start counter animations when loading is complete
-            animate(experienceCount, 5, { duration: 2, ease: "easeOut" });
-            animate(projectsCount, 30, { duration: 2.5, ease: "easeOut", delay: 0.2 });
-            animate(technologiesCount, 15, { duration: 2.8, ease: "easeOut", delay: 0.4 });
-
             const exitTimer = setTimeout(() => {
                 setShouldRender(false);
             }, 1200); // Longer display of 100% before exit
 
             return () => clearTimeout(exitTimer);
         }
-    }, [isComplete, isLoading, experienceCount, projectsCount, technologiesCount]);
+    }, [isComplete, isLoading]);
 
     return (
         <AnimatePresence>
