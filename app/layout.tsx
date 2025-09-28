@@ -34,6 +34,22 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Sufail Ahammed N - Full Stack Developer',
   description: 'Full Stack Developer specializing in Next.js, Tailwind CSS, and JavaScript',
+  icons: {
+    icon: [
+      {
+        url: '/favicon.ico',
+        sizes: '32x32',
+      },
+    ],
+    shortcut: '/favicon.ico',
+    apple: [
+      {
+        url: '/apple-icon.png',
+        sizes: '180x180',
+      },
+    ],
+  },
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {
