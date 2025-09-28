@@ -16,6 +16,7 @@ export default function CVDownload({ variant = 'button', size = 'md', className 
 
     const handleDownload = () => {
         playClickSound();
+
         // Track download event if you have analytics
         if (typeof window !== 'undefined' && (window as any).gtag) {
             (window as any).gtag('event', 'download', {
