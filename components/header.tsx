@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Volume2, VolumeX, BellDot, Github, Linkedin, Mail, Sun, Moon } from 'lucide-react'
+import { Volume2, VolumeX, BellDot, Github, Linkedin, Mail, Sun, Moon, Download } from 'lucide-react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useSound } from './sound-provider'
@@ -125,6 +125,20 @@ const Header = () => {
                                 transition={{ duration: 0.5, delay: 0.3 }}
                             >
                                 <Mail className="h-4 w-4" />
+                            </motion.a>
+
+                            {/* CV Download Link */}
+                            <motion.a
+                                href="/documents/Sufail_Ahammed_N_CV.pdf"
+                                download="Sufail_Ahammed_N_CV.pdf"
+                                onClick={playClickSound}
+                                className="text-white/70 hover:text-white transition-colors"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.5, delay: 0.4 }}
+                                title="Download CV"
+                            >
+                                <Download className="h-4 w-4" />
                             </motion.a>
                         </div>
 

@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Calendar, Github, Linkedin, MessageSquare } from 'lucide-react';
 import { ContactForm } from '@/components/contact/contact-form';
+import CVDownload from '@/components/ui/cv-download';
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -79,6 +80,17 @@ export default function ContactSection() {
                   <MessageSquare className="w-6 h-6" />
                 </a>
               </div>
+
+              {/* CV Download Card */}
+              <motion.div
+                className="mt-8"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
+                <CVDownload variant="card" />
+              </motion.div>
             </div>
           </div>
           <div className="bg-black/50 backdrop-blur-md p-6 md:p-8 rounded-2xl border border-white/10 shadow-xl">

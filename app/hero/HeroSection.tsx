@@ -4,7 +4,7 @@ import { motion, useAnimationControls } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
-import { Github, Linkedin, Mail, Phone, Code2, BracesIcon, Terminal, Hash, Database } from 'lucide-react';
+import { Github, Linkedin, Mail, Phone, Code2, BracesIcon, Terminal, Hash, Database, Download } from 'lucide-react';
 import Image from 'next/image';
 
 const containerVariants = {
@@ -146,7 +146,7 @@ export default function HeroSection() {
               </motion.span>
             </h1>
 
-            
+
             <div className="flex items-center mt-8 gap-6">
               <motion.div
                 className="w-full md:w-auto"
@@ -175,10 +175,32 @@ export default function HeroSection() {
                   Get In Touch
                 </a>
               </Button>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.1 }}
+              >
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="border border-white/40 hover:bg-white hover:text-black text-white rounded-none px-8 py-6 h-auto transition-all duration-300"
+                  asChild
+                >
+                  <a
+                    href="/documents/Sufail_Ahammed_N_CV.pdf"
+                    download="Sufail_Ahammed_N_CV.pdf"
+                    className="flex items-center gap-2 uppercase tracking-wider text-sm"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download CV
+                  </a>
+                </Button>
+              </motion.div>
             </div>
           </motion.div>
 
-         
+
           {/* <motion.div
             className="md:w-1/2 relative h-80 md:h-[500px]"
             initial={{ opacity: 0, scale: 0.9, x: 50 }}
