@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent, ReactNode } from 'react';
 import {
   BriefcaseBusiness,
@@ -90,6 +90,54 @@ function formatLabel(value: string) {
     .replace(/^./, (letter) => letter.toUpperCase());
 }
 
+function changedContentPaths(before: unknown, after: unknown, path: string[] = []): string[] {
+  if (Object.is(before, after)) return [];
+
+  if (Array.isArray(before) || Array.isArray(after)) {
+    if (!Array.isArray(before) || !Array.isArray(after)) {
+      return [path.join('.') || 'site content'];
+    }
+    const changed: string[] = [];
+    for (let index = 0; index < Math.max(before.length, after.length); index += 1) {
+      changed.push(...changedContentPaths(before[index], after[index], [...path, String(index)]));
+    }
+    return changed;
+  }
+
+  if (
+    typeof before !== 'object'
+    || before === null
+    || typeof after !== 'object'
+    || after === null
+  ) {
+    return [path.join('.') || 'site content'];
+  }
+
+  const beforeRecord = before as Record<string, unknown>;
+  const afterRecord = after as Record<string, unknown>;
+  const keys = Object.keys(beforeRecord).concat(Object.keys(afterRecord));
+  return keys
+    .filter((key, index) => keys.indexOf(key) === index)
+    .flatMap((key) => changedContentPaths(beforeRecord[key], afterRecord[key], [...path, key]));
+}
+
+function valueAtPath(value: unknown, path: string[]): unknown {
+  return path.reduce<unknown>((current, part) => {
+    if (Array.isArray(current)) return current[Number(part)];
+    if (typeof current === 'object' && current !== null) {
+      return (current as Record<string, unknown>)[part];
+    }
+    return undefined;
+  }, value);
+}
+
+function formatPreviewValue(value: unknown): string {
+  if (value === undefined) return 'Removed';
+  if (typeof value === 'string') return value || '(empty)';
+  const formatted = JSON.stringify(value);
+  return formatted.length > 360 ? `${formatted.slice(0, 360)}…` : formatted;
+}
+
 type ContentFieldProps = {
   label: string;
   fieldName: string;
@@ -98,7 +146,6 @@ type ContentFieldProps = {
   onChange: (path: PathPart[], value: unknown) => void;
   onUpload: (path: PathPart[], file: File) => void;
   uploadingPath: string | null;
-  onProjectDraft: (title: string, notes: string) => Promise<{ description: string; tech: string[] }>;
 };
 
 type ProjectListEditorProps = {
@@ -107,15 +154,11 @@ type ProjectListEditorProps = {
   onChange: (path: PathPart[], value: unknown) => void;
   onUpload: (path: PathPart[], file: File) => void;
   uploadingPath: string | null;
-  onProjectDraft: (title: string, notes: string) => Promise<{ description: string; tech: string[] }>;
 };
 
-function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath, onProjectDraft }: ProjectListEditorProps) {
+function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: ProjectListEditorProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [expandedProject, setExpandedProject] = useState<number | null>(null);
-  const [projectNotes, setProjectNotes] = useState<Record<number, string>>({});
-  const [draftingIndex, setDraftingIndex] = useState<number | null>(null);
-  const [draftError, setDraftError] = useState('');
 
   function moveProject(from: number, to: number) {
     if (to < 0 || to >= items.length || from === to) return;
@@ -243,57 +286,11 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath, onP
                 onChange={onChange}
                 onUpload={onUpload}
                 uploadingPath={uploadingPath}
-                onProjectDraft={onProjectDraft}
               />
-              <div className="space-y-3 rounded-xl border border-violet-300/15 bg-violet-300/[0.06] p-4">
-                <div className="flex items-start gap-3">
-                  <span className="rounded-lg bg-violet-300/10 p-2 text-violet-200"><Sparkles className="h-4 w-4" /></span>
-                  <div>
-                    <p className="text-sm font-medium text-white">Gemini writing assistant</p>
-                    <p className="mt-1 text-xs leading-5 text-white/55">Add notes so the AI writes accurate copy and suggests only technologies you mention.</p>
-                  </div>
-                </div>
-                <label className="block space-y-1.5 text-xs text-white/65">
-                  <span>Optional project notes</span>
-                  <textarea
-                    value={projectNotes[index] || ''}
-                    onChange={(event) => setProjectNotes((current) => ({ ...current, [index]: event.target.value }))}
-                    maxLength={1200}
-                    rows={2}
-                    placeholder="What does it do? What did you build it with?"
-                    className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-violet-300/50"
-                  />
-                </label>
-                <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    disabled={draftingIndex !== null || !project.title.trim()}
-                    onClick={async () => {
-                      setDraftError('');
-                      setDraftingIndex(index);
-                      try {
-                        const draft = await onProjectDraft(project.title, projectNotes[index] || '');
-                        onChange([...path, index, 'description'], draft.description);
-                        onChange([...path, index, 'tech'], draft.tech);
-                      } catch (error) {
-                        setDraftError(error instanceof Error ? error.message : 'Could not generate a draft.');
-                      } finally {
-                        setDraftingIndex(null);
-                      }
-                    }}
-                    className="inline-flex items-center gap-2 rounded-lg bg-violet-300 px-3.5 py-2 text-sm font-semibold text-[#171022] transition hover:bg-violet-200 disabled:cursor-not-allowed disabled:opacity-45"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    {draftingIndex === index ? 'Writing draft…' : 'Draft with AI'}
-                  </button>
-                  <span className="text-xs text-white/40">Review the suggestions before saving.</span>
-                </div>
-                {draftError && <p role="alert" className="text-sm text-red-200">{draftError}</p>}
-              </div>
-              <ContentField label="Description" fieldName="description" value={project.description} path={[...path, index, 'description']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} onProjectDraft={onProjectDraft} />
-              <ContentField label="Project image" fieldName="image" value={project.image} path={[...path, index, 'image']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} onProjectDraft={onProjectDraft} />
-              <ContentField label="Technology tags" fieldName="tech" value={project.tech} path={[...path, index, 'tech']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} onProjectDraft={onProjectDraft} />
-              <ContentField label="Project URL" fieldName="link" value={project.link} path={[...path, index, 'link']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} onProjectDraft={onProjectDraft} />
+              <ContentField label="Description" fieldName="description" value={project.description} path={[...path, index, 'description']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} />
+              <ContentField label="Project image" fieldName="image" value={project.image} path={[...path, index, 'image']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} />
+              <ContentField label="Technology tags" fieldName="tech" value={project.tech} path={[...path, index, 'tech']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} />
+              <ContentField label="Project URL" fieldName="link" value={project.link} path={[...path, index, 'link']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} />
             </div>
           </details>
         </article>
@@ -311,7 +308,6 @@ function ContentField({
   onChange,
   onUpload,
   uploadingPath,
-  onProjectDraft,
 }: ContentFieldProps) {
   if (path.length === 2 && path[0] === 'projects' && path[1] === 'items' && Array.isArray(value)) {
     return (
@@ -321,7 +317,6 @@ function ContentField({
         onChange={onChange}
         onUpload={onUpload}
         uploadingPath={uploadingPath}
-        onProjectDraft={onProjectDraft}
       />
     );
   }
@@ -340,7 +335,6 @@ function ContentField({
               onChange={onChange}
               onUpload={onUpload}
               uploadingPath={uploadingPath}
-              onProjectDraft={onProjectDraft}
             />
             <button
               type="button"
@@ -390,7 +384,6 @@ function ContentField({
                 onChange={onChange}
                 onUpload={onUpload}
                 uploadingPath={uploadingPath}
-                onProjectDraft={onProjectDraft}
               />
             </div>
           ))}
@@ -554,6 +547,13 @@ export default function AdminDashboard() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [dirty, setDirty] = useState(false);
+  const [aiInstruction, setAiInstruction] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
+  const [aiProposal, setAiProposal] = useState<SiteContent | null>(null);
+  const [aiProposalBase, setAiProposalBase] = useState<SiteContent | null>(null);
+  const contentRef = useRef(content);
+  contentRef.current = content;
 
   async function loadContent() {
     setLoading(true);
@@ -641,15 +641,51 @@ export default function AdminDashboard() {
     }
   }
 
-  async function draftProject(title: string, notes: string) {
-    const response = await fetch('/api/admin/project-draft', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, notes }),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Could not generate a draft.');
-    return result as { description: string; tech: string[] };
+  async function requestAiEdit() {
+    const baseContent = content;
+    setAiLoading(true);
+    setAiError('');
+    setAiProposal(null);
+    setAiProposalBase(null);
+    try {
+      const response = await fetch('/api/admin/content-assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instruction: aiInstruction, content: baseContent }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Could not generate an edit proposal.');
+      if (JSON.stringify(contentRef.current) !== JSON.stringify(baseContent)) {
+        throw new Error('Your content changed while AI was working. Generate a new proposal to include the latest edits.');
+      }
+      setAiProposal(result.content as SiteContent);
+      setAiProposalBase(baseContent);
+    } catch (requestError) {
+      setAiError(requestError instanceof Error ? requestError.message : 'Could not generate an edit proposal.');
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
+  function applyAiProposal() {
+    if (!aiProposal || !aiProposalBase) return;
+    if (JSON.stringify(content) !== JSON.stringify(aiProposalBase)) {
+      setAiError('Your content changed after this preview was created. Generate a new proposal before applying it.');
+      setAiProposal(null);
+      setAiProposalBase(null);
+      return;
+    }
+    setContent(aiProposal);
+    contentRef.current = aiProposal;
+    setDirty(true);
+    const changedSection = siteContentSectionNames.find(
+      (section) => section === aiChangedPaths[0]?.split('.')[0]
+    );
+    if (changedSection) setActiveSection(changedSection);
+    setAiProposal(null);
+    setAiProposalBase(null);
+    setMessage('AI changes applied to the editor. Save changes to publish them.');
+    setAiError('');
   }
 
   function changeContent(path: PathPart[], value: unknown) {
@@ -709,6 +745,7 @@ export default function AdminDashboard() {
   }
 
   const selectedData = content[activeSection];
+  const aiChangedPaths = aiProposal ? changedContentPaths(content, aiProposal) : [];
   const fieldEditor: ReactNode = (
     <ContentField
       label={sectionLabels[activeSection]}
@@ -718,7 +755,6 @@ export default function AdminDashboard() {
       onChange={changeContent}
       onUpload={uploadMedia}
       uploadingPath={uploadingPath}
-      onProjectDraft={draftProject}
     />
   );
 
@@ -797,6 +833,96 @@ export default function AdminDashboard() {
                   className="h-4 w-4 accent-cyan-300"
                 />
               </label>
+            </div>
+            <div className="space-y-4 rounded-2xl border border-violet-300/15 bg-violet-300/[0.05] p-5 sm:p-6">
+              <div className="flex items-start gap-3">
+                <span className="rounded-xl bg-violet-300/10 p-2.5 text-violet-200">
+                  <Sparkles className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="font-semibold">Ask AI to edit your website</h3>
+                  <p className="mt-1 text-sm leading-6 text-white/55">
+                    Describe what to add or change in any section. Gemini will prepare a preview; nothing changes until you apply it.
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-white/40">
+                    Your instruction and current portfolio content are sent to Gemini to prepare the preview.
+                  </p>
+                </div>
+              </div>
+              <label className="block space-y-2 text-sm text-white/75">
+                <span className="sr-only">Describe a website edit</span>
+                <textarea
+                  value={aiInstruction}
+                  onChange={(event) => setAiInstruction(event.target.value)}
+                  maxLength={2000}
+                  rows={3}
+                  placeholder="For example: Add a new project called …, update my hero headline to …, or add a skill group for …"
+                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-violet-300/50"
+                />
+              </label>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={requestAiEdit}
+                  disabled={aiLoading || aiInstruction.trim().length < 3}
+                  className="inline-flex items-center gap-2 rounded-lg bg-violet-300 px-4 py-2.5 text-sm font-semibold text-[#171022] transition hover:bg-violet-200 disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  {aiLoading ? 'Preparing preview…' : 'Generate preview'}
+                </button>
+                <span className="text-xs text-white/40">Your current edits are included. Review, apply, then save to publish.</span>
+              </div>
+              {aiError && <p role="alert" className="text-sm text-red-200">{aiError}</p>}
+              {aiProposal && (
+                <div className="space-y-3 rounded-xl border border-white/10 bg-black/25 p-4">
+                  <div>
+                    <p className="font-medium text-white">Preview of proposed changes</p>
+                    {aiChangedPaths.length > 0 ? (
+                      <>
+                        <ul className="mt-3 space-y-2">
+                          {aiChangedPaths.slice(0, 8).map((path) => (
+                            <li key={path} className="rounded-lg bg-white/[0.05] px-3 py-2">
+                              <p className="text-xs font-medium text-cyan-100/80">{path.split('.').map(formatLabel).join(' · ')}</p>
+                              <p className="mt-1 whitespace-pre-wrap break-words text-sm text-white/75">
+                                {formatPreviewValue(valueAtPath(aiProposal, path.split('.')))}
+                              </p>
+                            </li>
+                          ))}
+                          {aiChangedPaths.length > 8 && (
+                            <li className="px-2 py-1 text-xs text-white/45">and {aiChangedPaths.length - 8} more</li>
+                          )}
+                        </ul>
+                        <p className="mt-2 text-xs text-white/45">Review the affected section below before applying.</p>
+                      </>
+                    ) : (
+                      <p className="mt-1 text-sm text-white/55">No changes were proposed. Try a more specific instruction.</p>
+                    )}
+                  </div>
+                  {JSON.stringify(content) !== JSON.stringify(aiProposalBase) && (
+                    <p role="alert" className="text-sm text-amber-200">Your content changed after this preview. Generate a new preview before applying.</p>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={applyAiProposal}
+                      disabled={aiChangedPaths.length === 0 || JSON.stringify(content) !== JSON.stringify(aiProposalBase)}
+                      className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-black hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-45"
+                    >
+                      Apply preview
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAiProposal(null);
+                        setAiProposalBase(null);
+                      }}
+                      className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/75 hover:bg-white/[0.06]"
+                    >
+                      Discard
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             {fieldEditor}
           </section>

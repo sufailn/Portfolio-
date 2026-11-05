@@ -6,7 +6,7 @@
 - Create a Neon PostgreSQL database and set `DATABASE_URL` in Vercel and local `.env.local`.
 - Set `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and a unique random `ADMIN_SESSION_SECRET` (at least 32 characters). Never commit real values.
 - Create a Vercel Blob store and set its `BLOB_READ_WRITE_TOKEN` to enable media uploads in the admin.
-- Add `GEMINI_API_KEY` from Google AI Studio to enable the project description helper. Keep it server-side; never add a `NEXT_PUBLIC_` prefix.
+- Add `GEMINI_API_KEY` from Google AI Studio to enable the dashboard AI editor for any portfolio section. Keep it server-side; never add a `NEXT_PUBLIC_` prefix.
 - Open `/admin` to sign in. The content table is created automatically; the first save stores the portfolio's editable content in Neon.
 - The CMS manages the header, hero, career, skills, projects, workflow, contact, and footer sections. Changes to item lists are managed with Add/Remove controls.
 - Uploads accept JPG, PNG, WebP, GIF, and PDF files up to 4 MB.
