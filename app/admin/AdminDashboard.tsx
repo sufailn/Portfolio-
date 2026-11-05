@@ -847,6 +847,9 @@ export default function AdminDashboard() {
                   <p className="mt-1 text-xs leading-5 text-white/40">
                     Your instruction and current portfolio content are sent to Gemini to prepare the preview.
                   </p>
+                  <p className="mt-1 text-xs leading-5 text-white/40">
+                    No app-level text limit. Gemini’s own context and response limits still apply to very large requests.
+                  </p>
                 </div>
               </div>
               <label className="block space-y-2 text-sm text-white/75">
@@ -854,7 +857,6 @@ export default function AdminDashboard() {
                 <textarea
                   value={aiInstruction}
                   onChange={(event) => setAiInstruction(event.target.value)}
-                  maxLength={2000}
                   rows={3}
                   placeholder="For example: Add a new project called …, update my hero headline to …, or add a skill group for …"
                   className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-violet-300/50"
