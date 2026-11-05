@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import HeroSection from './hero/HeroSection';
 import LoadingSection from './LoadingSection';
+import { getSiteContent } from '@/lib/cms/database';
 
 // Dynamic imports for non-critical sections
 const CareerSection = dynamic(() => import('./career/CareerSection'), {
@@ -34,28 +35,42 @@ const FooterSection = dynamic(() => import('./footer/FooterSection'), {
   ssr: false
 });
 
-export default function Home() {
+export default async function Home() {
+  const content = await getSiteContent();
+
   return (
     <main className="min-h-screen bg-black text-white">
-      <HeroSection />
-      <Suspense fallback={<LoadingSection title="Career" />}>
-        <CareerSection />
-      </Suspense>
-      <Suspense fallback={<LoadingSection title="Skills" />}>
-        <SkillsSection />
-      </Suspense>
-      <Suspense fallback={<LoadingSection title="Projects" />}>
-        <ProjectsSection />
-      </Suspense>
-      <Suspense fallback={<LoadingSection title="Workflow" />}>
-        <WorkflowSection />
-      </Suspense>
-      <Suspense fallback={<LoadingSection title="Contact" />}>
-        <ContactSection />
-      </Suspense>
-      <Suspense fallback={<div className="h-20"></div>}>
-        <FooterSection />
-      </Suspense>
+      {content.hero.enabled && <HeroSection content={content.hero} />}
+      {content.career.enabled && (
+        <Suspense fallback={<LoadingSection title="Career" />}>
+          <CareerSection content={content.career} />
+        </Suspense>
+      )}
+      {content.skills.enabled && (
+        <Suspense fallback={<LoadingSection title="Skills" />}>
+          <SkillsSection content={content.skills} />
+        </Suspense>
+      )}
+      {content.projects.enabled && (
+        <Suspense fallback={<LoadingSection title="Projects" />}>
+          <ProjectsSection content={content.projects} />
+        </Suspense>
+      )}
+      {content.workflow.enabled && (
+        <Suspense fallback={<LoadingSection title="Workflow" />}>
+          <WorkflowSection content={content.workflow} />
+        </Suspense>
+      )}
+      {content.contact.enabled && (
+        <Suspense fallback={<LoadingSection title="Contact" />}>
+          <ContactSection content={content.contact} />
+        </Suspense>
+      )}
+      {content.footer.enabled && (
+        <Suspense fallback={<div className="h-20"></div>}>
+          <FooterSection content={content.footer} />
+        </Suspense>
+      )}
     </main>
   );
 }

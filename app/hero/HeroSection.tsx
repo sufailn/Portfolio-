@@ -6,6 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
 import { Github, Linkedin, Mail, Phone, Code2, BracesIcon, Terminal, Hash, Database, Download } from 'lucide-react';
 import Image from 'next/image';
+import type { SiteContent } from '@/lib/cms/content';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -60,7 +61,7 @@ const FloatingIcon = ({ icon: Icon, delay, duration, x, y }: FloatingIconProps) 
   );
 };
 
-export default function HeroSection() {
+export default function HeroSection({ content }: { content: SiteContent['hero'] }) {
   const [heroRef, heroInView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -97,7 +98,7 @@ export default function HeroSection() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              Hi, I&apos;m Sufail Ahammed N
+              {content.greeting}
             </motion.p>
 
             {/* Main heading with large, space-grotesk font */}
@@ -108,7 +109,7 @@ export default function HeroSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                CREATIVE
+                {content.headlinePrefix}
               </motion.span>
               <motion.span
                 className="block text-white"
@@ -117,20 +118,7 @@ export default function HeroSection() {
                 transition={{ delay: 0.5 }}
               >
                 <TypeAnimation
-                  sequence={[
-                    'WEBFLOW',
-                    1500,
-                    'NEXTJS',
-                    1500,
-                    'REACT',
-                    1500,
-                    'SANITY CMS',
-                    1500,
-                    'WORDPRESS',
-                    1500,
-                    'MERN STACK',
-                    1500,
-                  ] as const}
+                  sequence={content.rotatingWords.flatMap((word) => [word, 1500])}
                   wrapper="span"
                   speed={30}
                   repeat={Infinity}
@@ -142,7 +130,7 @@ export default function HeroSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
               >
-                DEVELOPER
+                {content.headlineSuffix}
               </motion.span>
             </h1>
 
@@ -158,7 +146,7 @@ export default function HeroSection() {
                   <div className="w-1 h-1 bg-white rounded-full"></div>
                   <div className="h-px w-20 md:w-40 bg-gradient-to-r from-white to-transparent"></div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-white/80 text-xs md:text-sm uppercase tracking-wider">MERN STACK CERTIFIED DEVELOPER</span>
+                    <span className="text-white/80 text-xs md:text-sm uppercase tracking-wider">{content.credential}</span>
                   </div>
                 </div>
               </motion.div>
@@ -172,7 +160,7 @@ export default function HeroSection() {
                 asChild
               >
                 <a href="#contact" className="flex items-center gap-2 uppercase tracking-wider text-sm">
-                  Get In Touch
+                  {content.contactLabel}
                 </a>
               </Button>
 
@@ -188,12 +176,12 @@ export default function HeroSection() {
                   asChild
                 >
                   <a
-                    href="/documents/Sufail_Ahammed_N_CV.pdf"
-                    download="Sufail_Ahammed_N_CV.pdf"
+                    href={content.cvUrl}
+                    download
                     className="flex items-center gap-2 uppercase tracking-wider text-sm"
                   >
                     <Download className="h-4 w-4" />
-                    Download CV
+                    {content.cvLabel}
                   </a>
                 </Button>
               </motion.div>
@@ -336,21 +324,20 @@ export default function HeroSection() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 1.2, duration: 0.6 }}
         >
-          {[
-            { href: "https://github.com/sufailn", icon: Github, label: "GitHub" },
-            { href: "https://linkedin.com/in/sufail-ahammed-n", icon: Linkedin, label: "LinkedIn" },
-            { href: "mailto:sufailahammed316@gmail.com", icon: Mail, label: "Email" }
-          ].map((social, index) => (
+          {content.socialLinks.map((social) => {
+            const icons = { GitHub: Github, LinkedIn: Linkedin, Email: Mail, Phone };
+            const SocialIcon = icons[social.label as keyof typeof icons] || Mail;
+            return (
             <a
-              key={index}
-              href={social.href}
+              key={social.url}
+              href={social.url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-white/60 hover:text-white transition-colors p-2"
             >
-              <social.icon className="h-5 w-5" />
+              <SocialIcon className="h-5 w-5" />
             </a>
-          ))}
+          )})}
           <div className="h-20 w-px bg-white/20 mx-auto"></div>
         </motion.div>
       </div>

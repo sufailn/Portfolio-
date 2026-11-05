@@ -10,6 +10,7 @@
 
 # next.js
 /.next/
+/.next-cms-build/
 /out/
 
 # production

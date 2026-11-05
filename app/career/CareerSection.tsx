@@ -5,49 +5,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, Briefcase, GraduationCap, MapPin } from 'lucide-react';
 import { AnimatedText, AnimatedSentence, AnimatedLetters } from '@/components/ui/animated-text';
 import { useSound } from '@/components/sound-provider';
-
-const timeline = [
-    {
-        period: "Mar 2024 - Jun 2025",
-        title: "Full Stack Developer",
-        organization: "Com Digital Marketing",
-        location: "Wayanad, India",
-        description: "Managed development of scalable web applications focusing on clean, maintainable code. Enhanced backend system performance by 30% and improved frontend responsiveness, resulting in 20% increased user satisfaction.",
-        type: "work"
-    },
-    {
-        period: "Jan 2022 - Feb 2024",
-        title: "Freelance Frontend Developer",
-        organization: "Self-employed",
-        location: "Calicut, India",
-        description: "Developed responsive landing pages and SPAs using modern frontend technologies. Built reusable components, optimized performance, and implemented SEO and accessibility best practices.",
-        type: "work"
-    },
-    {
-        period: "Jun 2024 - Sep 2024",
-        title: "Web Development Intern",
-        organization: "Inmakes Infotech Pvt. Ltd",
-        location: "Kochi, India",
-        description: "Increased user engagement 25% by developing MEAN stack apps with responsive UI and optimized backend.",
-        type: "work"
-    },
-    {
-        period: "2022 - 2024",
-        title: "Master of Computer Applications",
-        organization: "APJ Abdul Kalam Technological University",
-        location: "Kozhikode, India",
-        description: "Advanced studies in software development, data structures, algorithms, and modern web technologies.",
-        type: "education"
-    },
-    {
-        period: "2019 - 2022",
-        title: "Bachelor of Computer Applications",
-        organization: "University of Calicut",
-        location: "Malappuram, India",
-        description: "Foundation in computer science, programming fundamentals, and software development principles.",
-        type: "education"
-    }
-];
+import type { SiteContent } from '@/lib/cms/content';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -134,7 +92,7 @@ const RealtimeClock = () => {
     );
 };
 
-export default function CareerSection() {
+export default function CareerSection({ content }: { content: SiteContent['career'] }) {
     const { playClickSound } = useSound();
 
     return (
@@ -143,14 +101,14 @@ export default function CareerSection() {
                 <div className="flex flex-col md:flex-row justify-between items-center mb-12 md:mb-16">
                     <div className="mb-4 md:mb-0">
                         <AnimatedLetters
-                            text="Career Journey"
+                            text={content.heading}
                             variant="header"
                             className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70 mb-2 font-space-grotesk"
                             initialDelay={0.1}
                             staggerDelay={0.03}
                         />
                         <AnimatedSentence
-                            text="My professional timeline showcasing my experience and growth in the tech industry"
+                            text={content.description}
                             variant="body"
                             className="text-white/70 max-w-xl"
                             initialDelay={0.5}
@@ -182,7 +140,7 @@ export default function CareerSection() {
                         style={{ originY: 0 }}
                     />
 
-                    {timeline.map((item, index) => (
+                    {content.timeline.map((item, index) => (
                         <motion.div
                             key={index}
                             variants={itemVariants}

@@ -19,6 +19,8 @@ interface Project {
 
 interface ProjectsProps {
     projects: Project[];
+    heading: string;
+    description: string;
 }
 
 // Enhanced animation variants for better visual appeal
@@ -70,7 +72,7 @@ const imageVariants: Variants = {
     }
 };
 
-export default function Projects({ projects }: ProjectsProps) {
+export default function Projects({ projects, heading, description }: ProjectsProps) {
     const { playClickSound } = useSound();
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -109,10 +111,10 @@ export default function Projects({ projects }: ProjectsProps) {
                 >
                     <div className="text-left">
                         <h2 className="text-2xl font-mono uppercase tracking-tight mb-3 text-black dark:text-white">
-                            RELEVANT PROJECTS
+                            {heading}
                         </h2>
                         <p className="text-sm text-muted-foreground">
-                            A collection of my most recent work
+                            {description}
                         </p>
                     </div>
 

@@ -2,6 +2,9 @@
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Workflow, Palette, Code, Monitor } from 'lucide-react';
+import type { SiteContent } from '@/lib/cms/content';
+
+const workflowIcons = { Workflow, Palette, Code, Monitor };
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -32,34 +35,7 @@ const iconContainerVariants = {
   }
 };
 
-const workflowSteps = [
-  {
-    number: "01",
-    title: "UX / Wireframing",
-    description: "Creating intuitive user flows and wireframes to establish the foundation of your digital presence.",
-    icon: <Workflow className="h-6 w-6" />
-  },
-  {
-    number: "02",
-    title: "Web Design",
-    description: "Crafting visually stunning and responsive designs that align with your brand identity.",
-    icon: <Palette className="h-6 w-6" />
-  },
-  {
-    number: "03",
-    title: "Web Development",
-    description: "Building robust and scalable applications using cutting-edge technologies.",
-    icon: <Code className="h-6 w-6" />
-  },
-  {
-    number: "04",
-    title: "Testing & Deployment",
-    description: "Rigorous testing and seamless deployment to ensure optimal performance.",
-    icon: <Monitor className="h-6 w-6" />
-  }
-];
-
-export default function WorkflowSection() {
+export default function WorkflowSection({ content }: { content: SiteContent['workflow'] }) {
   return (
     <section className="py-24 px-4 bg-gradient-to-b from-background via-secondary/5 to-background relative overflow-hidden">
       {/* Background Elements */}
@@ -80,18 +56,20 @@ export default function WorkflowSection() {
             variants={containerVariants}
             className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70"
           >
-            My Development Process
+            {content.heading}
           </motion.h2>
           <motion.p
             variants={containerVariants}
             className="text-center text-muted-foreground max-w-2xl mx-auto"
           >
-            A streamlined approach to bringing your digital vision to life in four carefully crafted stages
+            {content.description}
           </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {workflowSteps.map((step, index) => (
+          {content.steps.map((step, index) => {
+            const Icon = workflowIcons[step.icon as keyof typeof workflowIcons] || Workflow;
+            return (
             <motion.div
               key={index}
               variants={cardVariants}
@@ -130,7 +108,7 @@ export default function WorkflowSection() {
                                after:absolute after:inset-0 after:rounded-xl after:border-2 after:border-primary/20 after:scale-110 after:opacity-0
                                after:transition-all after:duration-300 group-hover:after:scale-100 group-hover:after:opacity-100"
                     >
-                      {step.icon}
+                      <Icon className="h-6 w-6" />
                     </motion.div>
                   </div>
 
@@ -170,7 +148,7 @@ export default function WorkflowSection() {
                 />
               </Card>
             </motion.div>
-          ))}
+          )})}
         </div>
       </motion.div>
     </section>

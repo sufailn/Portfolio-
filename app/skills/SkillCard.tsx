@@ -30,7 +30,10 @@ export default function SkillCard({ icon, title, skills }: { icon: React.ReactNo
     >
       <div className="h-full flex flex-col">
         <div className="mb-3">
-          <h3 className="text-lg font-mono uppercase tracking-tight mb-1 text-black dark:text-white">{title}</h3>
+          <div className="flex items-center gap-3 text-black dark:text-white">
+            <span className="text-primary">{icon}</span>
+            <h3 className="text-lg font-mono uppercase tracking-tight mb-1">{title}</h3>
+          </div>
           <div className="h-[1px] w-12 bg-border"></div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-3">
@@ -43,7 +46,13 @@ export default function SkillCard({ icon, title, skills }: { icon: React.ReactNo
               variants={skillItemVariants}
               className="border border-border px-3 py-2 hover:border-primary/50 transition-colors cursor-default text-black dark:text-white"
             >
-              <span className="font-mono text-sm">{skill.name}</span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-sm">{skill.name}</span>
+                <span className="text-xs text-muted-foreground">{skill.level}%</span>
+              </div>
+              <div className="mt-2 h-1 overflow-hidden rounded-full bg-primary/10">
+                <div className="h-full bg-primary" style={{ width: `${skill.level}%` }} />
+              </div>
             </motion.div>
           ))}
         </div>

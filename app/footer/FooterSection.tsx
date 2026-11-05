@@ -7,31 +7,9 @@ import { Github, Linkedin, Mail, MessageSquare, Phone, MapPin } from 'lucide-rea
 import { useSound } from '@/components/sound-provider';
 import { SoundButton } from '@/components/ui/sound-button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import type { SiteContent } from '@/lib/cms/content';
 
-const socialLinks = [
-  {
-    icon: <Github className="w-5 h-5" />,
-    href: "https://github.com/sufailn",
-    label: "GitHub"
-  },
-  {
-    icon: <Linkedin className="w-5 h-5" />,
-    href: "https://www.linkedin.com/in/sufail-n/",
-    label: "LinkedIn"
-  },
-  {
-    icon: <MessageSquare className="w-5 h-5" />,
-    href: "https://wa.me/919562026070",
-    label: "WhatsApp"
-  },
-  {
-    icon: <Mail className="w-5 h-5" />,
-    href: "mailto:sufailahammed316@gmail.com",
-    label: "Email"
-  }
-];
-
-export default function FooterSection() {
+export default function FooterSection({ content }: { content: SiteContent['footer'] }) {
   const { playClickSound } = useSound();
 
   // Phone call dialog component
@@ -77,95 +55,59 @@ export default function FooterSection() {
             <div className="flex items-center gap-4 mb-4">
               <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary/20">
                 <Image
-                  src="/images/model_bw.png"
-                  alt="Sufail Ahammed N"
+                  src={content.profileImage}
+                  alt={content.name}
                   fill
                   className="object-cover"
                 />
               </div>
-              <h3 className="text-xl font-mono uppercase tracking-tight">Sufail Ahammed N</h3>
+              <h3 className="text-xl font-mono uppercase tracking-tight">{content.name}</h3>
             </div>
             <p className="text-muted-foreground mb-4">
-              Full Stack Developer specializing in creating beautiful and functional web applications.
+              {content.description}
             </p>
             <div className="space-y-1">
-              <PhoneDialog phoneNumber="+971 567435303" location="Dubai" />
-              <PhoneDialog phoneNumber="+91 9562026070" location="India" />
+              {content.phones.map((phone) => (
+                <PhoneDialog key={`${phone.phoneNumber}-${phone.location}`} phoneNumber={phone.phoneNumber} location={phone.location} />
+              ))}
             </div>
           </div>
           <div>
             <h3 className="text-xl font-mono uppercase tracking-tight mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="#skills" className="text-muted-foreground hover:text-primary transition-colors">
-                  Skills
-                </a>
-              </li>
-              <li>
-                <a href="#projects" className="text-muted-foreground hover:text-primary transition-colors">
-                  Projects
-                </a>
-              </li>
-              <li>
-                <a href="#career" className="text-muted-foreground hover:text-primary transition-colors">
-                  Career
-                </a>
-              </li>
-              <li>
-                <a href="#workflow" className="text-muted-foreground hover:text-primary transition-colors">
-                  Workflow
-                </a>
-              </li>
-              <li>
-                <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">
-                  Contact
-                </a>
-              </li>
+              {content.quickLinks.map((link) => (
+                <li key={`${link.label}-${link.url}`}>
+                  <a href={link.url} className="text-muted-foreground hover:text-primary transition-colors">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
           <div>
             <h3 className="text-xl font-mono uppercase tracking-tight mb-4">Connect</h3>
             <div className="flex gap-4">
-              <a
-                href="https://github.com/sufailn"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Github className="h-6 w-6" />
-              </a>
-              <a
-                href="https://linkedin.com/in/sufail-ahammed-n"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Linkedin className="h-6 w-6" />
-              </a>
-              <a
-                href="https://wa.me/919562026070"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <MessageSquare className="h-6 w-6" />
-              </a>
-              <a
-                href="mailto:sufailahammed316@gmail.com"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Mail className="h-6 w-6" />
-              </a>
+              {content.socialLinks.map((social) => {
+                const icons = { GitHub: Github, LinkedIn: Linkedin, WhatsApp: MessageSquare, Email: Mail };
+                const SocialIcon = icons[social.label as keyof typeof icons] || Mail;
+                return (
+                  <a
+                    key={social.url}
+                    href={social.url}
+                    target={social.url.startsWith('http') ? '_blank' : undefined}
+                    rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    aria-label={social.label}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <SocialIcon className="h-6 w-6" />
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-border text-center text-muted-foreground">
-          <p className="font-mono text-xs">&copy; {new Date().getFullYear()} SUFAIL AHAMMED N. ALL RIGHTS RESERVED.</p>
+          <p className="font-mono text-xs">&copy; {new Date().getFullYear()} {content.name.toUpperCase()}. ALL RIGHTS RESERVED.</p>
         </div>
       </div>
     </footer>

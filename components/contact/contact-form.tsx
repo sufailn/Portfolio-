@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
+import type { SiteContent } from "@/lib/cms/content"
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -29,7 +30,7 @@ const FormSchema = z.object({
   }),
 })
 
-export function ContactForm() {
+export function ContactForm({ content }: { content: SiteContent['contact']['form'] }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -68,9 +69,9 @@ export function ContactForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{content.nameLabel}</FormLabel>
               <FormControl>
-                <Input placeholder="Your Name" {...field} />
+                <Input placeholder={content.namePlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -81,9 +82,9 @@ export function ContactForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{content.emailLabel}</FormLabel>
               <FormControl>
-                <Input placeholder="your.email@example.com" {...field} />
+                <Input placeholder={content.emailPlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -94,10 +95,10 @@ export function ContactForm() {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Message</FormLabel>
+              <FormLabel>{content.messageLabel}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Tell us a little bit about yourself"
+                  placeholder={content.messagePlaceholder}
                   className="resize-none"
                   {...field}
                 />
@@ -106,7 +107,7 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">{content.submitLabel}</Button>
       </form>
     </Form>
   )

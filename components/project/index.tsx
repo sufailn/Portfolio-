@@ -68,9 +68,9 @@ export default function Project() {
   },
   {
     title: "Zica Bella",
-    description: "Zica Bella is a modern fashion brand targeting a global audience. We built a full-fledged e-commerce platform with Next.js, Supabase, PostgreSQL, Sanity, Tailwind, and TypeScript. The platform includes secure payment gateway integration, dynamic product management, user accounts, and order tracking features.",
+    description: "Zica Bella is a modern fashion brand targeting a global audience. We built a full-fledged e-commerce platform with Next.js, Supabase, PostgreSQL, Tailwind, and TypeScript. The platform includes secure payment gateway integration, dynamic product management, user accounts, and order tracking features.",
     image: "/images/zicabella.jpg",
-    tech: ["Next.js", "Supabase", "PostgreSQL", "Sanity", "Tailwind CSS", "TypeScript"],
+    tech: ["Next.js", "Supabase", "PostgreSQL", "Tailwind CSS", "TypeScript"],
     link: "https://www.zicabella.com/"
   },
   {
@@ -86,4 +86,3 @@ export default function Project() {
     <Projects projects={projects} />
   );
 }
-

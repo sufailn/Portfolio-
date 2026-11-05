@@ -2,12 +2,21 @@
 
 ## 📋 Pre-Deployment Checklist
 
-### 1. CV File Setup
+### 1. Custom Portfolio CMS
+- Create a Neon PostgreSQL database and set `DATABASE_URL` in Vercel and local `.env.local`.
+- Set `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and a unique random `ADMIN_SESSION_SECRET` (at least 32 characters). Never commit real values.
+- Create a Vercel Blob store and set its `BLOB_READ_WRITE_TOKEN` to enable media uploads in the admin.
+- Open `/admin` to sign in. The content table is created automatically; the first save stores the portfolio's editable content in Neon.
+- The CMS manages the header, hero, career, skills, projects, workflow, contact, and footer sections. Changes to item lists are managed with Add/Remove controls.
+- Uploads accept JPG, PNG, WebP, GIF, and PDF files up to 4 MB.
+- The initial CMS content is seeded from the portfolio source defaults; Sanity-hosted documents are not imported automatically.
+
+### 2. CV File Setup
 - [ ] Replace placeholder PDF in `public/documents/Sufail_Ahammed_N_CV.pdf` with your actual CV
 - [ ] Ensure file size is reasonable (< 10MB for better performance)
 - [ ] Test download locally before deployment
 
-### 2. Git Commands for Deployment
+### 3. Git Commands for Deployment
 ```bash
 # Add your CV file
 git add public/documents/Sufail_Ahammed_N_CV.pdf
@@ -19,12 +28,12 @@ git commit -m "Add actual CV PDF file for download"
 git push origin main
 ```
 
-### 3. Vercel Deployment
+### 4. Vercel Deployment
 - Vercel will automatically deploy when you push to main branch
 - Files in `public/` folder are served as static assets
 - Your CV will be accessible at: `https://yourdomain.vercel.app/documents/Sufail_Ahammed_N_CV.pdf`
 
-### 4. Verification
+### 5. Verification
 After deployment, test:
 - [ ] CV download button in header works
 - [ ] CV download in contact section works

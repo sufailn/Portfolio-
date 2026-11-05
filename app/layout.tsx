@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/sonner';
 import Header from '@/components/header';
 import { SoundProvider } from '@/components/sound-provider';
 import dynamic from 'next/dynamic';
+import { getSiteContent } from '@/lib/cms/database';
 
 // Dynamically import the AppLoader to avoid hydration issues
 const AppLoaderClient = dynamic(() => import('./AppLoader'), { ssr: false });
@@ -58,11 +59,13 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const content = await getSiteContent();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans`}>
@@ -76,7 +79,7 @@ export default function RootLayout({
             {/* App Loader */}
             <AppLoaderClient />
 
-            <Header />
+            {content.header.enabled && <Header content={content.header} />}
             <main className="pt-16">
               {children}
             </main>

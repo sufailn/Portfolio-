@@ -6,8 +6,9 @@ import { Volume2, VolumeX, BellDot, Github, Linkedin, Mail, Sun, Moon, Download 
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useSound } from './sound-provider'
+import type { SiteContent } from '@/lib/cms/content'
 
-const Header = () => {
+const Header = ({ content }: { content: SiteContent['header'] }) => {
     const [time, setTime] = useState<string>("")
     const [date, setDate] = useState<string>("")
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -16,14 +17,6 @@ const Header = () => {
     const { isSoundEnabled, toggleSound, playClickSound, isLoading } = useSound()
 
     // Menu items inspired by bjornflow.com
-    const menuItems = [
-        { href: "#", label: "HOME" },
-        { href: "#projects", label: "WORK" },
-        { href: "#skills", label: "SKILLS" },
-        { href: "#career", label: "CAREER" },
-        { href: "#contact", label: "CONTACT" },
-    ]
-
     const [amPm, setAmPm] = useState<string>("AM")
 
     useEffect(() => {
@@ -63,16 +56,16 @@ const Header = () => {
                         className="flex items-center"
                     >
                         <Link href="/" className="font-space-grotesk text-xl font-semibold tracking-wider">
-                            SUFAIL <span className="text-primary">NALAKATH.</span>
+                            {content.brand}
                         </Link>
                     </motion.div>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
-                        {menuItems.map((item, i) => (
+                        {content.navLinks.map((item, i) => (
                             <motion.a
                                 key={i}
-                                href={item.href}
+                                href={item.url}
                                 onClick={playClickSound}
                                 className="text-sm tracking-widest font-medium text-white/80 hover:text-white transition-colors nav-link"
                                 initial={{ opacity: 0, y: -10 }}
@@ -92,45 +85,31 @@ const Header = () => {
                     <div className="flex items-center justify-end gap-4 sm:gap-6">
                         {/* Social Links */}
                         <div className="hidden sm:flex space-x-3 items-center">
-                            <motion.a
-                                href="https://github.com/sufailn"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={playClickSound}
-                                className="text-white/70 hover:text-white transition-colors"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.1 }}
-                            >
-                                <Github className="h-4 w-4" />
-                            </motion.a>
-                            <motion.a
-                                href="https://www.linkedin.com/in/sufailahammed"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={playClickSound}
-                                className="text-white/70 hover:text-white transition-colors"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.2 }}
-                            >
-                                <Linkedin className="h-4 w-4" />
-                            </motion.a>
-                            <motion.a
-                                href="mailto:sufailahammed316@gmail.com"
-                                onClick={playClickSound}
-                                className="text-white/70 hover:text-white transition-colors"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.3 }}
-                            >
-                                <Mail className="h-4 w-4" />
-                            </motion.a>
+                            {content.socialLinks.map((social, index) => {
+                                const icons = { GitHub: Github, LinkedIn: Linkedin, Email: Mail }
+                                const SocialIcon = icons[social.label as keyof typeof icons] || Mail
+                                return (
+                                    <motion.a
+                                        key={social.url}
+                                        href={social.url}
+                                        target={social.url.startsWith('http') ? '_blank' : undefined}
+                                        rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                        aria-label={social.label}
+                                        onClick={playClickSound}
+                                        className="text-white/70 hover:text-white transition-colors"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
+                                    >
+                                        <SocialIcon className="h-4 w-4" />
+                                    </motion.a>
+                                )
+                            })}
 
                             {/* CV Download Link */}
                             <motion.a
-                                href="/documents/Sufail_Ahammed_N_CV.pdf"
-                                download="Sufail_Ahammed_N_CV.pdf"
+                                href={content.cvUrl}
+                                download
                                 onClick={playClickSound}
                                 className="text-white/70 hover:text-white transition-colors"
                                 initial={{ opacity: 0, x: 20 }}
@@ -220,10 +199,10 @@ const Header = () => {
                     transition={{ duration: 0.3 }}
                 >
                     <div className="py-3 px-6">
-                        {menuItems.map((item, i) => (
+                        {content.navLinks.map((item, i) => (
                             <motion.a
                                 key={i}
-                                href={item.href}
+                                href={item.url}
                                 onClick={() => {
                                     setIsMenuOpen(false)
                                     playClickSound()
@@ -273,31 +252,23 @@ const Header = () => {
 
                         {/* Mobile Social Links */}
                         <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-center space-x-6">
-                            <a
-                                href="https://github.com/sufailn"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={playClickSound}
-                                className="text-white/70 hover:text-white transition-colors"
-                            >
-                                <Github className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="https://www.linkedin.com/in/sufailahammed"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={playClickSound}
-                                className="text-white/70 hover:text-white transition-colors"
-                            >
-                                <Linkedin className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="mailto:sufailahammed316@gmail.com"
-                                onClick={playClickSound}
-                                className="text-white/70 hover:text-white transition-colors"
-                            >
-                                <Mail className="h-5 w-5" />
-                            </a>
+                            {content.socialLinks.map((social) => {
+                                const icons = { GitHub: Github, LinkedIn: Linkedin, Email: Mail }
+                                const SocialIcon = icons[social.label as keyof typeof icons] || Mail
+                                return (
+                                    <a
+                                        key={social.url}
+                                        href={social.url}
+                                        target={social.url.startsWith('http') ? '_blank' : undefined}
+                                        rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                        aria-label={social.label}
+                                        onClick={playClickSound}
+                                        className="text-white/70 hover:text-white transition-colors"
+                                    >
+                                        <SocialIcon className="h-5 w-5" />
+                                    </a>
+                                )
+                            })}
                         </div>
                     </div>
                 </motion.div>
