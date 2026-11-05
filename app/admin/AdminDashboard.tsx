@@ -2,7 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent, ReactNode } from 'react';
-import { ChevronDown, ChevronUp, Eye, EyeOff, GripVertical, Plus, Trash2 } from 'lucide-react';
+import {
+  BriefcaseBusiness,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  EyeOff,
+  FileText,
+  FolderKanban,
+  GripVertical,
+  LayoutDashboard,
+  Link2,
+  Mail,
+  Plus,
+  Sparkles,
+  Trash2,
+  Workflow,
+  Wrench,
+} from 'lucide-react';
 import { defaultSiteContent, siteContentSectionNames, type SiteContent } from '@/lib/cms/content';
 
 type PathPart = string | number;
@@ -10,6 +27,7 @@ type PathPart = string | number;
 const arrayTemplates: Record<string, unknown> = {
   navLinks: defaultSiteContent.header.navLinks[0],
   socialLinks: defaultSiteContent.header.socialLinks[0],
+  tech: '',
   timeline: defaultSiteContent.career.timeline[0],
   groups: defaultSiteContent.skills.groups[0],
   skills: defaultSiteContent.skills.groups[0].skills[0],
@@ -80,6 +98,7 @@ type ContentFieldProps = {
   onChange: (path: PathPart[], value: unknown) => void;
   onUpload: (path: PathPart[], file: File) => void;
   uploadingPath: string | null;
+  onProjectDraft: (title: string, notes: string) => Promise<{ description: string; tech: string[] }>;
 };
 
 type ProjectListEditorProps = {
@@ -88,10 +107,15 @@ type ProjectListEditorProps = {
   onChange: (path: PathPart[], value: unknown) => void;
   onUpload: (path: PathPart[], file: File) => void;
   uploadingPath: string | null;
+  onProjectDraft: (title: string, notes: string) => Promise<{ description: string; tech: string[] }>;
 };
 
-function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: ProjectListEditorProps) {
+function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath, onProjectDraft }: ProjectListEditorProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [expandedProject, setExpandedProject] = useState<number | null>(null);
+  const [projectNotes, setProjectNotes] = useState<Record<number, string>>({});
+  const [draftingIndex, setDraftingIndex] = useState<number | null>(null);
+  const [draftError, setDraftError] = useState('');
 
   function moveProject(from: number, to: number) {
     if (to < 0 || to >= items.length || from === to) return;
@@ -110,7 +134,10 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
         </div>
         <button
           type="button"
-          onClick={() => onChange(path, [...items, { ...blankProject }])}
+          onClick={() => {
+            setExpandedProject(items.length);
+            onChange(path, [...items, { ...blankProject }]);
+          }}
           className="inline-flex items-center gap-2 rounded-lg bg-cyan-300 px-4 py-2.5 text-sm font-semibold text-black hover:bg-cyan-200"
         >
           <Plus className="h-4 w-4" />
@@ -124,6 +151,7 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
         </div>
       )}
 
+      <div className="space-y-3">
       {items.map((project, index) => (
         <article
           key={`${project.title}-${index}`}
@@ -195,24 +223,82 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
               <Trash2 className="h-4 w-4" />
             </button>
           </div>
-          <details className="border-t border-white/10">
+          <details
+            open={expandedProject === index}
+            onToggle={(event) => {
+              if (event.currentTarget.open) setExpandedProject(index);
+              else if (expandedProject === index) setExpandedProject(null);
+            }}
+            className="border-t border-white/10"
+          >
             <summary className="cursor-pointer px-4 py-3 text-sm text-cyan-200/90 hover:bg-white/[0.03]">
               Edit project details
             </summary>
-            <div className="p-3 sm:p-4">
+            <div className="space-y-4 p-3 sm:p-4">
               <ContentField
-                label="Project details"
-                fieldName="project"
-                value={{ ...project, visible: project.visible !== false }}
-                path={[...path, index]}
+                label="Project title"
+                fieldName="title"
+                value={project.title}
+                path={[...path, index, 'title']}
                 onChange={onChange}
                 onUpload={onUpload}
                 uploadingPath={uploadingPath}
+                onProjectDraft={onProjectDraft}
               />
+              <div className="space-y-3 rounded-xl border border-violet-300/15 bg-violet-300/[0.06] p-4">
+                <div className="flex items-start gap-3">
+                  <span className="rounded-lg bg-violet-300/10 p-2 text-violet-200"><Sparkles className="h-4 w-4" /></span>
+                  <div>
+                    <p className="text-sm font-medium text-white">Gemini writing assistant</p>
+                    <p className="mt-1 text-xs leading-5 text-white/55">Add notes so the AI writes accurate copy and suggests only technologies you mention.</p>
+                  </div>
+                </div>
+                <label className="block space-y-1.5 text-xs text-white/65">
+                  <span>Optional project notes</span>
+                  <textarea
+                    value={projectNotes[index] || ''}
+                    onChange={(event) => setProjectNotes((current) => ({ ...current, [index]: event.target.value }))}
+                    maxLength={1200}
+                    rows={2}
+                    placeholder="What does it do? What did you build it with?"
+                    className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-violet-300/50"
+                  />
+                </label>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    disabled={draftingIndex !== null || !project.title.trim()}
+                    onClick={async () => {
+                      setDraftError('');
+                      setDraftingIndex(index);
+                      try {
+                        const draft = await onProjectDraft(project.title, projectNotes[index] || '');
+                        onChange([...path, index, 'description'], draft.description);
+                        onChange([...path, index, 'tech'], draft.tech);
+                      } catch (error) {
+                        setDraftError(error instanceof Error ? error.message : 'Could not generate a draft.');
+                      } finally {
+                        setDraftingIndex(null);
+                      }
+                    }}
+                    className="inline-flex items-center gap-2 rounded-lg bg-violet-300 px-3.5 py-2 text-sm font-semibold text-[#171022] transition hover:bg-violet-200 disabled:cursor-not-allowed disabled:opacity-45"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    {draftingIndex === index ? 'Writing draft…' : 'Draft with AI'}
+                  </button>
+                  <span className="text-xs text-white/40">Review the suggestions before saving.</span>
+                </div>
+                {draftError && <p role="alert" className="text-sm text-red-200">{draftError}</p>}
+              </div>
+              <ContentField label="Description" fieldName="description" value={project.description} path={[...path, index, 'description']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} onProjectDraft={onProjectDraft} />
+              <ContentField label="Project image" fieldName="image" value={project.image} path={[...path, index, 'image']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} onProjectDraft={onProjectDraft} />
+              <ContentField label="Technology tags" fieldName="tech" value={project.tech} path={[...path, index, 'tech']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} onProjectDraft={onProjectDraft} />
+              <ContentField label="Project URL" fieldName="link" value={project.link} path={[...path, index, 'link']} onChange={onChange} onUpload={onUpload} uploadingPath={uploadingPath} onProjectDraft={onProjectDraft} />
             </div>
           </details>
         </article>
       ))}
+      </div>
     </div>
   );
 }
@@ -225,6 +311,7 @@ function ContentField({
   onChange,
   onUpload,
   uploadingPath,
+  onProjectDraft,
 }: ContentFieldProps) {
   if (path.length === 2 && path[0] === 'projects' && path[1] === 'items' && Array.isArray(value)) {
     return (
@@ -234,6 +321,7 @@ function ContentField({
         onChange={onChange}
         onUpload={onUpload}
         uploadingPath={uploadingPath}
+        onProjectDraft={onProjectDraft}
       />
     );
   }
@@ -252,6 +340,7 @@ function ContentField({
               onChange={onChange}
               onUpload={onUpload}
               uploadingPath={uploadingPath}
+              onProjectDraft={onProjectDraft}
             />
             <button
               type="button"
@@ -278,27 +367,34 @@ function ContentField({
 
   if (typeof value === 'object' && value !== null) {
     return (
-      <fieldset className="space-y-4 rounded-xl border border-white/10 p-4">
+      <fieldset className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:p-5">
         <legend className="px-2 text-sm font-semibold text-white">{label}</legend>
+        <div className="grid gap-4 md:grid-cols-2">
         {Object.entries(value)
           .filter(([key]) => !(
-            key === 'endDate'
-            && path[0] === 'career'
-            && path[1] === 'timeline'
-            && (value as { isCurrent?: boolean }).isCurrent
+            (key === 'enabled' && path.length === 1)
+            || (
+              key === 'endDate'
+              && path[0] === 'career'
+              && path[1] === 'timeline'
+              && (value as { isCurrent?: boolean }).isCurrent
+            )
           ))
           .map(([key, child]) => (
-          <ContentField
-            key={key}
-            label={formatLabel(key)}
-            fieldName={key}
-            value={child}
-            path={[...path, key]}
-            onChange={onChange}
-            onUpload={onUpload}
-            uploadingPath={uploadingPath}
-          />
+            <div key={key} className={Array.isArray(child) ? 'md:col-span-2' : ''}>
+              <ContentField
+                label={formatLabel(key)}
+                fieldName={key}
+                value={child}
+                path={[...path, key]}
+                onChange={onChange}
+                onUpload={onUpload}
+                uploadingPath={uploadingPath}
+                onProjectDraft={onProjectDraft}
+              />
+            </div>
           ))}
+        </div>
       </fieldset>
     );
   }
@@ -435,9 +531,20 @@ const sectionDescriptions: Record<(typeof siteContentSectionNames)[number], stri
   footer: 'Edit your profile details, phone numbers, links, and socials.',
 };
 
+const sectionIcons: Record<keyof SiteContent, typeof LayoutDashboard> = {
+  header: LayoutDashboard,
+  hero: Sparkles,
+  career: BriefcaseBusiness,
+  skills: Wrench,
+  projects: FolderKanban,
+  workflow: Workflow,
+  contact: Mail,
+  footer: Link2,
+};
+
 export default function AdminDashboard() {
   const [content, setContent] = useState<SiteContent>(defaultSiteContent);
-  const [activeSection, setActiveSection] = useState<keyof SiteContent>('hero');
+  const [activeSection, setActiveSection] = useState<keyof SiteContent>('projects');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [signedIn, setSignedIn] = useState(false);
@@ -446,6 +553,7 @@ export default function AdminDashboard() {
   const [uploadingPath, setUploadingPath] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [dirty, setDirty] = useState(false);
 
   async function loadContent() {
     setLoading(true);
@@ -459,6 +567,7 @@ export default function AdminDashboard() {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Unable to load content.');
       setContent(result);
+      setDirty(false);
       setSignedIn(true);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Unable to load content.');
@@ -502,6 +611,7 @@ export default function AdminDashboard() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Unable to save content.');
+      setDirty(false);
       setMessage('Changes saved. Refresh the portfolio to see the updates.');
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : 'Unable to save content.');
@@ -522,12 +632,29 @@ export default function AdminDashboard() {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Upload failed.');
       setContent((current) => updateAtPath(current, path, result.url));
+      setDirty(true);
       setMessage('Upload complete. Save changes to publish this file.');
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : 'Upload failed.');
     } finally {
       setUploadingPath(null);
     }
+  }
+
+  async function draftProject(title: string, notes: string) {
+    const response = await fetch('/api/admin/project-draft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, notes }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Could not generate a draft.');
+    return result as { description: string; tech: string[] };
+  }
+
+  function changeContent(path: PathPart[], value: unknown) {
+    setContent((current) => updateAtPath(current, path, value));
+    setDirty(true);
   }
 
   async function signOut() {
@@ -588,9 +715,10 @@ export default function AdminDashboard() {
       fieldName={activeSection}
       value={selectedData}
       path={[activeSection]}
-      onChange={(path, value) => setContent((current) => updateAtPath(current, path, value))}
+      onChange={changeContent}
       onUpload={uploadMedia}
       uploadingPath={uploadingPath}
+      onProjectDraft={draftProject}
     />
   );
 
@@ -599,17 +727,17 @@ export default function AdminDashboard() {
       <div className="mx-auto max-w-[1500px]">
         <header className="sticky top-0 z-30 -mx-4 mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-[#07090d]/95 px-4 py-4 backdrop-blur sm:-mx-8 sm:px-8">
           <div className="min-w-[220px]">
-            <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">Custom Portfolio CMS</p>
-            <h1 className="mt-1 text-2xl font-semibold">Manage your website</h1>
+            <p className="text-xs font-medium uppercase tracking-[0.24em] text-cyan-300">Portfolio Studio</p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight">Your website</h1>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={saveContent}
               disabled={saving || uploadingPath !== null}
-              className="rounded-lg bg-cyan-300 px-5 py-2.5 text-sm font-semibold text-black hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-cyan-300 px-5 py-2.5 text-sm font-semibold text-black shadow-[0_8px_24px_rgba(103,232,249,0.12)] transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {saving ? 'Saving…' : 'Save changes'}
+              {saving ? 'Saving…' : dirty ? 'Save changes · Unsaved' : 'Save changes'}
             </button>
             <a href="/" target="_blank" rel="noreferrer" className="rounded-lg border border-white/20 px-4 py-2 text-sm hover:bg-white/10">View site</a>
             <button type="button" onClick={signOut} className="rounded-lg border border-white/20 px-4 py-2 text-sm hover:bg-white/10">Sign out</button>
@@ -617,33 +745,58 @@ export default function AdminDashboard() {
         </header>
 
         <div className="grid items-start gap-6 lg:grid-cols-[250px_minmax(0,1fr)] xl:gap-8">
-          <nav aria-label="Content sections" className="flex gap-2 overflow-x-auto pb-2 lg:sticky lg:top-28 lg:flex-col lg:overflow-visible lg:pb-0">
+          <aside className="lg:sticky lg:top-28">
+          <div className="mb-3 hidden px-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35 lg:block">Edit content</div>
+          <nav aria-label="Content sections" className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:rounded-2xl lg:border lg:border-white/[0.07] lg:bg-white/[0.02] lg:p-2 lg:pb-2">
             {siteContentSectionNames.map((section) => (
               <button
                 key={section}
                 type="button"
                 onClick={() => setActiveSection(section)}
-                className={`flex shrink-0 items-center justify-between gap-3 rounded-xl px-4 py-3 text-left text-sm transition-colors ${
-                  activeSection === section ? 'bg-cyan-300 font-semibold text-black' : 'bg-white/5 text-white/75 hover:bg-white/10'
+                className={`flex shrink-0 items-center gap-3 rounded-xl px-3.5 py-3 text-left text-sm transition-colors ${
+                  activeSection === section ? 'bg-white/[0.09] font-medium text-white shadow-inner' : 'text-white/55 hover:bg-white/[0.05] hover:text-white/90'
                 }`}
               >
-                <span>{sectionLabels[section]}</span>
-                <span className={`h-2 w-2 rounded-full ${
-                  content[section].enabled
-                    ? activeSection === section ? 'bg-black/60' : 'bg-emerald-300'
-                    : activeSection === section ? 'bg-black/40' : 'bg-white/25'
+                {(() => {
+                  const Icon = sectionIcons[section];
+                  return <Icon className={`h-4 w-4 shrink-0 ${activeSection === section ? 'text-cyan-200' : 'text-white/35'}`} />;
+                })()}
+                <span className="flex-1">{sectionLabels[section]}</span>
+                <span className={`h-1.5 w-1.5 rounded-full ${
+                  content[section].enabled ? 'bg-emerald-300' : 'bg-white/20'
                 }`} aria-label={content[section].enabled ? 'Section enabled' : 'Section hidden'} />
               </button>
             ))}
           </nav>
+          <div className="mt-4 hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 lg:block">
+            <div className="flex items-center gap-2 text-sm text-white/75">
+              <FileText className="h-4 w-4 text-cyan-200/80" />
+              <span>{content.projects.items.filter((project) => project.visible !== false).length} live projects</span>
+            </div>
+            <p className="mt-2 text-xs leading-5 text-white/40">Your edits stay here until you save them.</p>
+          </div>
+          </aside>
 
           <section className="min-w-0 space-y-5">
             {error && <p role="alert" className="rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-200">{error}</p>}
             {message && <p role="status" className="rounded-lg border border-green-400/30 bg-green-400/10 p-3 text-sm text-green-200">{message}</p>}
-            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02] p-5 sm:p-6">
-              <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">Website section</p>
-              <h2 className="mt-2 text-2xl font-semibold">{sectionLabels[activeSection]}</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">{sectionDescriptions[activeSection]}</p>
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.045] to-transparent p-5 sm:p-6">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-cyan-200/75">Website section</p>
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight">{sectionLabels[activeSection]}</h2>
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-white/50">{sectionDescriptions[activeSection]}</p>
+              </div>
+              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-3.5 py-2.5 text-sm text-white/75">
+                <span>{content[activeSection].enabled ? 'Visible on site' : 'Hidden from site'}</span>
+                <input
+                  type="checkbox"
+                  checked={content[activeSection].enabled}
+                  onChange={(event) => {
+                    changeContent([activeSection, 'enabled'], event.target.checked);
+                  }}
+                  className="h-4 w-4 accent-cyan-300"
+                />
+              </label>
             </div>
             {fieldEditor}
           </section>
