@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, Briefcase, GraduationCap, MapPin } from 'lucide-react';
 import { AnimatedText, AnimatedSentence, AnimatedLetters } from '@/components/ui/animated-text';
 import { useSound } from '@/components/sound-provider';
-import type { SiteContent } from '@/lib/cms/content';
+import { formatCareerDateRange, type SiteContent } from '@/lib/cms/content';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -182,7 +182,7 @@ export default function CareerSection({ content }: { content: SiteContent['caree
                                             className={`px-3 py-1 text-xs font-semibold rounded-full ${item.type === 'work' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400'}`}
                                             whileHover={{ scale: 1.05 }}
                                         >
-                                            {item.period}
+                                            {formatCareerDateRange(item.startDate, item.endDate, item.isCurrent)}
                                         </motion.span>
                                     </div>
                                     <AnimatedText

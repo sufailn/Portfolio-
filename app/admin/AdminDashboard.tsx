@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent, ReactNode } from 'react';
+import { ChevronDown, ChevronUp, Eye, EyeOff, GripVertical, Plus, Trash2 } from 'lucide-react';
 import { defaultSiteContent, siteContentSectionNames, type SiteContent } from '@/lib/cms/content';
 
 type PathPart = string | number;
@@ -16,6 +17,15 @@ const arrayTemplates: Record<string, unknown> = {
   steps: defaultSiteContent.workflow.steps[0],
   phones: defaultSiteContent.footer.phones[0],
   quickLinks: defaultSiteContent.footer.quickLinks[0],
+};
+
+const blankProject: SiteContent['projects']['items'][number] = {
+  title: '',
+  description: '',
+  image: '',
+  tech: [],
+  link: '',
+  visible: true,
 };
 
 function updateAtPath<T>(value: T, path: PathPart[], replacement: unknown): T {
@@ -72,6 +82,141 @@ type ContentFieldProps = {
   uploadingPath: string | null;
 };
 
+type ProjectListEditorProps = {
+  items: SiteContent['projects']['items'];
+  path: PathPart[];
+  onChange: (path: PathPart[], value: unknown) => void;
+  onUpload: (path: PathPart[], file: File) => void;
+  uploadingPath: string | null;
+};
+
+function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: ProjectListEditorProps) {
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  function moveProject(from: number, to: number) {
+    if (to < 0 || to >= items.length || from === to) return;
+    const reordered = [...items];
+    const [project] = reordered.splice(from, 1);
+    reordered.splice(to, 0, project);
+    onChange(path, reordered);
+  }
+
+  return (
+    <div className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold">Your projects</h2>
+          <p className="mt-1 text-sm text-white/55">Drag projects to reorder them. Hidden projects stay saved as drafts.</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => onChange(path, [...items, { ...blankProject }])}
+          className="inline-flex items-center gap-2 rounded-lg bg-cyan-300 px-4 py-2.5 text-sm font-semibold text-black hover:bg-cyan-200"
+        >
+          <Plus className="h-4 w-4" />
+          Add project
+        </button>
+      </div>
+
+      {items.length === 0 && (
+        <div className="rounded-xl border border-dashed border-white/20 px-4 py-10 text-center text-sm text-white/60">
+          No projects yet. Add your first project above.
+        </div>
+      )}
+
+      {items.map((project, index) => (
+        <article
+          key={`${project.title}-${index}`}
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            event.preventDefault();
+            if (draggedIndex !== null) moveProject(draggedIndex, index);
+            setDraggedIndex(null);
+          }}
+          className={`rounded-xl border bg-black/20 transition-colors ${
+            draggedIndex === index ? 'border-cyan-300/70 opacity-60' : 'border-white/10'
+          }`}
+        >
+          <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4">
+            <button
+              type="button"
+              draggable
+              onDragStart={(event) => {
+                event.dataTransfer.effectAllowed = 'move';
+                setDraggedIndex(index);
+              }}
+              onDragEnd={() => setDraggedIndex(null)}
+              aria-label={`Drag to reorder ${project.title || `project ${index + 1}`}`}
+              title="Drag to reorder"
+              className="cursor-grab touch-none rounded-lg p-2 text-white/50 hover:bg-white/10 hover:text-white active:cursor-grabbing"
+            >
+              <GripVertical className="h-5 w-5" />
+            </button>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium">{project.title || `Untitled project ${index + 1}`}</p>
+              <p className="text-xs text-white/50">{project.tech.length ? project.tech.join(' · ') : 'Add project details'}</p>
+            </div>
+            <span className={`rounded-full px-2.5 py-1 text-xs ${project.visible === false ? 'bg-white/10 text-white/50' : 'bg-emerald-400/10 text-emerald-200'}`}>
+              {project.visible === false ? 'Hidden' : 'Live'}
+            </span>
+            <button
+              type="button"
+              onClick={() => onChange([...path, index, 'visible'], project.visible === false)}
+              aria-label={project.visible === false ? 'Show project' : 'Hide project'}
+              title={project.visible === false ? 'Show project' : 'Hide project'}
+              className="rounded-lg p-2 text-white/65 hover:bg-white/10 hover:text-white"
+            >
+              {project.visible === false ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => moveProject(index, index - 1)}
+              disabled={index === 0}
+              aria-label="Move project up"
+              className="rounded-lg p-2 text-white/65 hover:bg-white/10 hover:text-white disabled:opacity-25"
+            >
+              <ChevronUp className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => moveProject(index, index + 1)}
+              disabled={index === items.length - 1}
+              aria-label="Move project down"
+              className="rounded-lg p-2 text-white/65 hover:bg-white/10 hover:text-white disabled:opacity-25"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange(path, items.filter((_, itemIndex) => itemIndex !== index))}
+              aria-label={`Delete ${project.title || `project ${index + 1}`}`}
+              className="rounded-lg p-2 text-red-300 hover:bg-red-400/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+          <details className="border-t border-white/10">
+            <summary className="cursor-pointer px-4 py-3 text-sm text-cyan-200/90 hover:bg-white/[0.03]">
+              Edit project details
+            </summary>
+            <div className="p-3 sm:p-4">
+              <ContentField
+                label="Project details"
+                fieldName="project"
+                value={{ ...project, visible: project.visible !== false }}
+                path={[...path, index]}
+                onChange={onChange}
+                onUpload={onUpload}
+                uploadingPath={uploadingPath}
+              />
+            </div>
+          </details>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function ContentField({
   label,
   fieldName,
@@ -81,6 +226,18 @@ function ContentField({
   onUpload,
   uploadingPath,
 }: ContentFieldProps) {
+  if (path.length === 2 && path[0] === 'projects' && path[1] === 'items' && Array.isArray(value)) {
+    return (
+      <ProjectListEditor
+        items={value as SiteContent['projects']['items']}
+        path={path}
+        onChange={onChange}
+        onUpload={onUpload}
+        uploadingPath={uploadingPath}
+      />
+    );
+  }
+
   if (Array.isArray(value)) {
     return (
       <fieldset className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
@@ -123,7 +280,14 @@ function ContentField({
     return (
       <fieldset className="space-y-4 rounded-xl border border-white/10 p-4">
         <legend className="px-2 text-sm font-semibold text-white">{label}</legend>
-        {Object.entries(value).map(([key, child]) => (
+        {Object.entries(value)
+          .filter(([key]) => !(
+            key === 'endDate'
+            && path[0] === 'career'
+            && path[1] === 'timeline'
+            && (value as { isCurrent?: boolean }).isCurrent
+          ))
+          .map(([key, child]) => (
           <ContentField
             key={key}
             label={formatLabel(key)}
@@ -134,7 +298,7 @@ function ContentField({
             onUpload={onUpload}
             uploadingPath={uploadingPath}
           />
-        ))}
+          ))}
       </fieldset>
     );
   }
@@ -170,6 +334,20 @@ function ContentField({
   }
 
   if (typeof value === 'string') {
+    if (fieldName === 'startDate' || fieldName === 'endDate') {
+      return (
+        <label className="block space-y-1.5 text-sm text-white/80">
+          <span>{label}</span>
+          <input
+            type="date"
+            value={value}
+            onChange={(event) => onChange(path, event.target.value)}
+            className="w-full rounded-lg border border-white/15 bg-[#11151c] px-3 py-2 text-white outline-none focus:border-cyan-400"
+          />
+        </label>
+      );
+    }
+
     if (fieldName === 'type' || fieldName === 'icon') {
       const options = fieldName === 'type'
         ? ['work', 'education']
@@ -244,6 +422,17 @@ const sectionLabels: Record<(typeof siteContentSectionNames)[number], string> = 
   workflow: 'Workflow',
   contact: 'Contact',
   footer: 'Footer',
+};
+
+const sectionDescriptions: Record<(typeof siteContentSectionNames)[number], string> = {
+  header: 'Set your brand, navigation, social links, and CV download.',
+  hero: 'Edit your introduction, animated headline, and first-screen links.',
+  career: 'Manage experience and education. Choose dates from the calendar.',
+  skills: 'Organize skill groups and update proficiency levels.',
+  projects: 'Add projects, reorder them, and hide drafts without deleting them.',
+  workflow: 'Describe the steps in your development process.',
+  contact: 'Update your contact details and message form.',
+  footer: 'Edit your profile details, phone numbers, links, and socials.',
 };
 
 export default function AdminDashboard() {
@@ -407,31 +596,43 @@ export default function AdminDashboard() {
 
   return (
     <main className="min-h-screen bg-[#07090d] px-4 py-8 text-white sm:px-8">
-      <div className="mx-auto max-w-7xl">
-        <header className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
-          <div>
+      <div className="mx-auto max-w-[1500px]">
+        <header className="sticky top-0 z-30 -mx-4 mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-[#07090d]/95 px-4 py-4 backdrop-blur sm:-mx-8 sm:px-8">
+          <div className="min-w-[220px]">
             <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">Custom Portfolio CMS</p>
-            <h1 className="mt-2 text-3xl font-semibold">Manage your website</h1>
-            <p className="mt-1 text-sm text-white/60">Edit text, add or remove items, toggle sections, and upload media.</p>
+            <h1 className="mt-1 text-2xl font-semibold">Manage your website</h1>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={saveContent}
+              disabled={saving || uploadingPath !== null}
+              className="rounded-lg bg-cyan-300 px-5 py-2.5 text-sm font-semibold text-black hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {saving ? 'Saving…' : 'Save changes'}
+            </button>
             <a href="/" target="_blank" rel="noreferrer" className="rounded-lg border border-white/20 px-4 py-2 text-sm hover:bg-white/10">View site</a>
             <button type="button" onClick={signOut} className="rounded-lg border border-white/20 px-4 py-2 text-sm hover:bg-white/10">Sign out</button>
           </div>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
-          <nav aria-label="Content sections" className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+        <div className="grid items-start gap-6 lg:grid-cols-[250px_minmax(0,1fr)] xl:gap-8">
+          <nav aria-label="Content sections" className="flex gap-2 overflow-x-auto pb-2 lg:sticky lg:top-28 lg:flex-col lg:overflow-visible lg:pb-0">
             {siteContentSectionNames.map((section) => (
               <button
                 key={section}
                 type="button"
                 onClick={() => setActiveSection(section)}
-                className={`shrink-0 rounded-lg px-4 py-3 text-left text-sm transition-colors ${
+                className={`flex shrink-0 items-center justify-between gap-3 rounded-xl px-4 py-3 text-left text-sm transition-colors ${
                   activeSection === section ? 'bg-cyan-300 font-semibold text-black' : 'bg-white/5 text-white/75 hover:bg-white/10'
                 }`}
               >
-                {sectionLabels[section]}
+                <span>{sectionLabels[section]}</span>
+                <span className={`h-2 w-2 rounded-full ${
+                  content[section].enabled
+                    ? activeSection === section ? 'bg-black/60' : 'bg-emerald-300'
+                    : activeSection === section ? 'bg-black/40' : 'bg-white/25'
+                }`} aria-label={content[section].enabled ? 'Section enabled' : 'Section hidden'} />
               </button>
             ))}
           </nav>
@@ -439,17 +640,12 @@ export default function AdminDashboard() {
           <section className="min-w-0 space-y-5">
             {error && <p role="alert" className="rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-200">{error}</p>}
             {message && <p role="status" className="rounded-lg border border-green-400/30 bg-green-400/10 p-3 text-sm text-green-200">{message}</p>}
-            {fieldEditor}
-            <div className="sticky bottom-4 flex justify-end">
-              <button
-                type="button"
-                onClick={saveContent}
-                disabled={saving || uploadingPath !== null}
-                className="rounded-lg bg-cyan-300 px-6 py-3 font-semibold text-black shadow-lg hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {saving ? 'Saving…' : 'Save changes'}
-              </button>
+            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02] p-5 sm:p-6">
+              <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">Website section</p>
+              <h2 className="mt-2 text-2xl font-semibold">{sectionLabels[activeSection]}</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">{sectionDescriptions[activeSection]}</p>
             </div>
+            {fieldEditor}
           </section>
         </div>
       </div>

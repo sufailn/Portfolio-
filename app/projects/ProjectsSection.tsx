@@ -4,7 +4,7 @@ import type { SiteContent } from '@/lib/cms/content';
 export default function ProjectsSection({ content }: { content: SiteContent['projects'] }) {
   return (
     <EnhancedProjects
-      projects={content.items}
+      projects={content.items.filter((project) => project.visible !== false)}
       heading={content.heading}
       description={content.description}
     />

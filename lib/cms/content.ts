@@ -35,7 +35,9 @@ export const siteContentSchema = z.object({
     heading: z.string(),
     description: z.string(),
     timeline: z.array(z.object({
-      period: z.string(),
+      startDate: z.string(),
+      endDate: z.string(),
+      isCurrent: z.boolean(),
       title: z.string(),
       organization: z.string(),
       location: z.string(),
@@ -67,6 +69,7 @@ export const siteContentSchema = z.object({
       image: contentUrlSchema,
       tech: z.array(z.string()),
       link: z.string(),
+      visible: z.boolean().optional(),
     })),
   }),
   workflow: z.object({
@@ -156,7 +159,9 @@ export const defaultSiteContent: SiteContent = {
     description: 'My professional timeline showcasing my experience and growth in the tech industry',
     timeline: [
       {
-        period: 'Mar 2024 - Jun 2025',
+        startDate: '2024-03-01',
+        endDate: '2025-06-30',
+        isCurrent: false,
         title: 'Full Stack Developer',
         organization: 'Com Digital Marketing',
         location: 'Wayanad, India',
@@ -164,7 +169,9 @@ export const defaultSiteContent: SiteContent = {
         type: 'work',
       },
       {
-        period: 'Jan 2022 - Feb 2024',
+        startDate: '2022-01-01',
+        endDate: '2024-02-29',
+        isCurrent: false,
         title: 'Freelance Frontend Developer',
         organization: 'Self-employed',
         location: 'Calicut, India',
@@ -172,7 +179,9 @@ export const defaultSiteContent: SiteContent = {
         type: 'work',
       },
       {
-        period: 'Jun 2024 - Sep 2024',
+        startDate: '2024-06-01',
+        endDate: '2024-09-30',
+        isCurrent: false,
         title: 'Web Development Intern',
         organization: 'Inmakes Infotech Pvt. Ltd',
         location: 'Kochi, India',
@@ -180,7 +189,9 @@ export const defaultSiteContent: SiteContent = {
         type: 'work',
       },
       {
-        period: '2022 - 2024',
+        startDate: '2022-01-01',
+        endDate: '2024-12-31',
+        isCurrent: false,
         title: 'Master of Computer Applications',
         organization: 'APJ Abdul Kalam Technological University',
         location: 'Kozhikode, India',
@@ -188,7 +199,9 @@ export const defaultSiteContent: SiteContent = {
         type: 'education',
       },
       {
-        period: '2019 - 2022',
+        startDate: '2019-01-01',
+        endDate: '2022-12-31',
+        isCurrent: false,
         title: 'Bachelor of Computer Applications',
         organization: 'University of Calicut',
         location: 'Malappuram, India',
@@ -245,17 +258,17 @@ export const defaultSiteContent: SiteContent = {
     heading: 'RELEVANT PROJECTS',
     description: 'A collection of my most recent work',
     items: [
-      { title: 'GlideAway Migration Service', description: 'A responsive web application for Visa Services business using modern web technologies and optimized user experience.', image: '/images/glidewaymigration.png', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://www.glidewaymigration.com/' },
-      { title: 'Smart Licence System', description: 'Vehicle safety system using Python Flask and Flutter with RFID authentication and alcohol detection integration.', image: '/images/digilicencce.jpg', tech: ['Python', 'Flask', 'Flutter', 'Arduino'], link: 'https://github.com/sufailn/SmartLicence' },
-      { title: 'Glideway Tourism', description: 'Dynamic travel platform for seamless tour planning and booking with optimized performance and user engagement.', image: '/images/image 24.png', tech: ['React', 'Node.js', 'MongoDB'], link: 'https://www.glidewaytourism.com/' },
-      { title: 'Plante', description: 'A versatile online platform for plant enthusiasts, focusing on a seamless shopping experience and reliable performance.', image: '/images/plante.png', tech: ['React', 'Node.js', 'MongoDB'], link: 'https://planteuae.com/' },
-      { title: 'Medconnect', description: 'A comprehensive MEAN stack application for hospital appointment booking with dedicated sections for Appointments, Doctors, and Patients.', image: '/images/medconnect.jpg', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://medconnect-billing.vercel.app/' },
-      { title: 'Legend Foods', description: 'A responsive web application for a food brand using modern web technologies and optimized user experience.', image: '/images/legend.jpg', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://www.legendfoods.ae/' },
-      { title: 'Doctor Appointment Management System', description: 'A comprehensive MEAN stack application for streamlining hospital appointment booking with dedicated sections for Appointments, Doctors, and Patients.', image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80', tech: ['Angular', 'Node.js', 'MongoDB', 'Express'], link: '#' },
-      { title: 'Lawyers World', description: 'A responsive web application for visa services using modern web technologies and optimized user experience.', image: '/images/law-firm-2.jpg', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://thelawyersworld.vercel.app/' },
-      { title: 'NotSuitable', description: 'An edgy fashion brand with a distinct personality and a visually minimal yet bold e-commerce interface.', image: '/images/notsuitable.jpg', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://www.notsuitable.in/' },
-      { title: 'Zica Bella', description: 'A modern fashion e-commerce platform with secure payments, dynamic product management, user accounts, and order tracking.', image: '/images/zicabella.jpg', tech: ['Next.js', 'Supabase', 'PostgreSQL', 'Tailwind CSS', 'TypeScript'], link: 'https://www.zicabella.com/' },
-      { title: 'Comdigitalmarketing', description: 'A modern digital marketing platform built with Next.js, Tailwind, and TypeScript, focusing on campaign management, analytics, and lead generation.', image: '/images/comdigitalmarketing.jpg', tech: ['Next.js', 'Tailwind CSS', 'TypeScript'], link: 'https://www.comdigitalmarketing.com/' },
+      { title: 'GlideAway Migration Service', description: 'A responsive web application for Visa Services business using modern web technologies and optimized user experience.', image: '/images/glidewaymigration.png', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://www.glidewaymigration.com/', visible: true },
+      { title: 'Smart Licence System', description: 'Vehicle safety system using Python Flask and Flutter with RFID authentication and alcohol detection integration.', image: '/images/digilicencce.jpg', tech: ['Python', 'Flask', 'Flutter', 'Arduino'], link: 'https://github.com/sufailn/SmartLicence', visible: true },
+      { title: 'Glideway Tourism', description: 'Dynamic travel platform for seamless tour planning and booking with optimized performance and user engagement.', image: '/images/image 24.png', tech: ['React', 'Node.js', 'MongoDB'], link: 'https://www.glidewaytourism.com/', visible: true },
+      { title: 'Plante', description: 'A versatile online platform for plant enthusiasts, focusing on a seamless shopping experience and reliable performance.', image: '/images/plante.png', tech: ['React', 'Node.js', 'MongoDB'], link: 'https://planteuae.com/', visible: true },
+      { title: 'Medconnect', description: 'A comprehensive MEAN stack application for hospital appointment booking with dedicated sections for Appointments, Doctors, and Patients.', image: '/images/medconnect.jpg', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://medconnect-billing.vercel.app/', visible: true },
+      { title: 'Legend Foods', description: 'A responsive web application for a food brand using modern web technologies and optimized user experience.', image: '/images/legend.jpg', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://www.legendfoods.ae/', visible: true },
+      { title: 'Doctor Appointment Management System', description: 'A comprehensive MEAN stack application for streamlining hospital appointment booking with dedicated sections for Appointments, Doctors, and Patients.', image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80', tech: ['Angular', 'Node.js', 'MongoDB', 'Express'], link: '#', visible: true },
+      { title: 'Lawyers World', description: 'A responsive web application for visa services using modern web technologies and optimized user experience.', image: '/images/law-firm-2.jpg', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://thelawyersworld.vercel.app/', visible: true },
+      { title: 'NotSuitable', description: 'An edgy fashion brand with a distinct personality and a visually minimal yet bold e-commerce interface.', image: '/images/notsuitable.jpg', tech: ['Next.js', 'Tailwind CSS', 'React'], link: 'https://www.notsuitable.in/', visible: true },
+      { title: 'Zica Bella', description: 'A modern fashion e-commerce platform with secure payments, dynamic product management, user accounts, and order tracking.', image: '/images/zicabella.jpg', tech: ['Next.js', 'Supabase', 'PostgreSQL', 'Tailwind CSS', 'TypeScript'], link: 'https://www.zicabella.com/', visible: true },
+      { title: 'Comdigitalmarketing', description: 'A modern digital marketing platform built with Next.js, Tailwind, and TypeScript, focusing on campaign management, analytics, and lead generation.', image: '/images/comdigitalmarketing.jpg', tech: ['Next.js', 'Tailwind CSS', 'TypeScript'], link: 'https://www.comdigitalmarketing.com/', visible: true },
     ],
   },
   workflow: {
@@ -328,3 +341,17 @@ export const siteContentSectionNames = [
   'contact',
   'footer',
 ] as const;
+
+export function formatCareerDateRange(startDate: string, endDate: string, isCurrent: boolean) {
+  const formatDate = (value: string) => {
+    if (!value) return '';
+    const [year, month, day] = value.split('-').map(Number);
+    if (!year || !month || !day) return '';
+    return new Date(year, month - 1, day).toLocaleDateString('en', { month: 'short', year: 'numeric' });
+  };
+
+  const start = formatDate(startDate);
+  const end = isCurrent ? 'Present' : formatDate(endDate);
+  if (!start) return 'Add dates';
+  return `${start} - ${end || 'Select end date'}`;
+}
