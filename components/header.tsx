@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Volume2, VolumeX, BellDot, Github, Linkedin, Mail, Sun, Moon, Download } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useSound } from './sound-provider'
 import type { SiteContent } from '@/lib/cms/content'
 
 const Header = ({ content }: { content: SiteContent['header'] }) => {
+    const pathname = usePathname()
     const [time, setTime] = useState<string>("")
     const [date, setDate] = useState<string>("")
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -43,6 +45,8 @@ const Header = ({ content }: { content: SiteContent['header'] }) => {
 
         return () => clearInterval(interval)
     }, [])
+
+    if (pathname.startsWith('/admin')) return null
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/85 backdrop-blur-md">

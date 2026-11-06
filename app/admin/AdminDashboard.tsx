@@ -13,8 +13,10 @@ import {
   GripVertical,
   LayoutDashboard,
   Link2,
+  LogOut,
   Mail,
   Plus,
+  Save,
   Sparkles,
   Trash2,
   Workflow,
@@ -169,11 +171,11 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
   }
 
   return (
-    <div className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
+    <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold">Your projects</h2>
-          <p className="mt-1 text-sm text-white/55">Drag projects to reorder them. Hidden projects stay saved as drafts.</p>
+          <p className="mt-1 text-sm text-slate-500">Drag projects to reorder them. Hidden projects stay saved as drafts.</p>
         </div>
         <button
           type="button"
@@ -181,7 +183,7 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
             setExpandedProject(items.length);
             onChange(path, [...items, { ...blankProject }]);
           }}
-          className="inline-flex items-center gap-2 rounded-lg bg-cyan-300 px-4 py-2.5 text-sm font-semibold text-black hover:bg-cyan-200"
+          className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
         >
           <Plus className="h-4 w-4" />
           Add project
@@ -189,7 +191,7 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
       </div>
 
       {items.length === 0 && (
-        <div className="rounded-xl border border-dashed border-white/20 px-4 py-10 text-center text-sm text-white/60">
+        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
           No projects yet. Add your first project above.
         </div>
       )}
@@ -204,8 +206,8 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
             if (draggedIndex !== null) moveProject(draggedIndex, index);
             setDraggedIndex(null);
           }}
-          className={`rounded-xl border bg-black/20 transition-colors ${
-            draggedIndex === index ? 'border-cyan-300/70 opacity-60' : 'border-white/10'
+          className={`rounded-xl border bg-white transition-colors ${
+            draggedIndex === index ? 'border-slate-500 opacity-60' : 'border-slate-200'
           }`}
         >
           <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4">
@@ -219,15 +221,15 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
               onDragEnd={() => setDraggedIndex(null)}
               aria-label={`Drag to reorder ${project.title || `project ${index + 1}`}`}
               title="Drag to reorder"
-              className="cursor-grab touch-none rounded-lg p-2 text-white/50 hover:bg-white/10 hover:text-white active:cursor-grabbing"
+              className="cursor-grab touch-none rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 active:cursor-grabbing"
             >
               <GripVertical className="h-5 w-5" />
             </button>
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{project.title || `Untitled project ${index + 1}`}</p>
-              <p className="text-xs text-white/50">{project.tech.length ? project.tech.join(' · ') : 'Add project details'}</p>
+              <p className="text-xs text-slate-500">{project.tech.length ? project.tech.join(' · ') : 'Add project details'}</p>
             </div>
-            <span className={`rounded-full px-2.5 py-1 text-xs ${project.visible === false ? 'bg-white/10 text-white/50' : 'bg-emerald-400/10 text-emerald-200'}`}>
+            <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${project.visible === false ? 'bg-slate-100 text-slate-500' : 'bg-emerald-50 text-emerald-700'}`}>
               {project.visible === false ? 'Hidden' : 'Live'}
             </span>
             <button
@@ -235,7 +237,7 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
               onClick={() => onChange([...path, index, 'visible'], project.visible === false)}
               aria-label={project.visible === false ? 'Show project' : 'Hide project'}
               title={project.visible === false ? 'Show project' : 'Hide project'}
-              className="rounded-lg p-2 text-white/65 hover:bg-white/10 hover:text-white"
+              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
             >
               {project.visible === false ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
             </button>
@@ -244,7 +246,7 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
               onClick={() => moveProject(index, index - 1)}
               disabled={index === 0}
               aria-label="Move project up"
-              className="rounded-lg p-2 text-white/65 hover:bg-white/10 hover:text-white disabled:opacity-25"
+              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-25"
             >
               <ChevronUp className="h-4 w-4" />
             </button>
@@ -253,7 +255,7 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
               onClick={() => moveProject(index, index + 1)}
               disabled={index === items.length - 1}
               aria-label="Move project down"
-              className="rounded-lg p-2 text-white/65 hover:bg-white/10 hover:text-white disabled:opacity-25"
+              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-25"
             >
               <ChevronDown className="h-4 w-4" />
             </button>
@@ -261,7 +263,7 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
               type="button"
               onClick={() => onChange(path, items.filter((_, itemIndex) => itemIndex !== index))}
               aria-label={`Delete ${project.title || `project ${index + 1}`}`}
-              className="rounded-lg p-2 text-red-300 hover:bg-red-400/10"
+              className="rounded-lg p-2 text-rose-600 hover:bg-rose-50"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -272,9 +274,9 @@ function ProjectListEditor({ items, path, onChange, onUpload, uploadingPath }: P
               if (event.currentTarget.open) setExpandedProject(index);
               else if (expandedProject === index) setExpandedProject(null);
             }}
-            className="border-t border-white/10"
+            className="border-t border-slate-200"
           >
-            <summary className="cursor-pointer px-4 py-3 text-sm text-cyan-200/90 hover:bg-white/[0.03]">
+            <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
               Edit project details
             </summary>
             <div className="space-y-4 p-3 sm:p-4">
@@ -323,10 +325,10 @@ function ContentField({
 
   if (Array.isArray(value)) {
     return (
-      <fieldset className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
-        <legend className="px-2 text-sm font-semibold text-white">{label}</legend>
+      <fieldset className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+        <legend className="px-2 text-sm font-semibold text-slate-800">{label}</legend>
         {value.map((item, index) => (
-          <div key={index} className="relative rounded-lg border border-white/10 p-3 pr-12">
+          <div key={index} className="relative rounded-lg border border-slate-200 bg-white p-3 pr-12">
             <ContentField
               label={`${label} ${index + 1}`}
               fieldName={fieldName}
@@ -339,7 +341,7 @@ function ContentField({
             <button
               type="button"
               onClick={() => onChange(path, value.filter((_, itemIndex) => itemIndex !== index))}
-              className="absolute right-3 top-3 rounded px-2 py-1 text-xs text-red-300 hover:bg-red-400/10"
+              className="absolute right-3 top-3 rounded px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
             >
               Remove
             </button>
@@ -351,7 +353,7 @@ function ContentField({
             const template = value[0] ?? arrayTemplates[String(path[path.length - 1])];
             onChange(path, [...value, blankLike(template)]);
           }}
-          className="rounded border border-white/20 px-3 py-2 text-sm text-white/80 hover:bg-white/10"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
           + Add {label.replace(/s$/, '')}
         </button>
@@ -361,8 +363,8 @@ function ContentField({
 
   if (typeof value === 'object' && value !== null) {
     return (
-      <fieldset className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:p-5">
-        <legend className="px-2 text-sm font-semibold text-white">{label}</legend>
+      <fieldset className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <legend className="px-2 text-sm font-semibold text-slate-800">{label}</legend>
         <div className="grid gap-4 md:grid-cols-2">
         {Object.entries(value)
           .filter(([key]) => !(
@@ -394,13 +396,13 @@ function ContentField({
 
   if (typeof value === 'boolean') {
     return (
-      <label className="flex items-center justify-between gap-4 rounded-lg border border-white/10 px-4 py-3 text-sm text-white/90">
+      <label className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
         <span>{label}</span>
         <input
           type="checkbox"
           checked={value}
           onChange={(event) => onChange(path, event.target.checked)}
-          className="h-4 w-4 accent-cyan-400"
+          className="h-4 w-4 accent-slate-900"
         />
       </label>
     );
@@ -408,7 +410,7 @@ function ContentField({
 
   if (typeof value === 'number') {
     return (
-      <label className="block space-y-1.5 text-sm text-white/80">
+      <label className="block space-y-1.5 text-sm font-medium text-slate-700">
         <span>{label}</span>
         <input
           type="number"
@@ -416,7 +418,7 @@ function ContentField({
           min={fieldName === 'level' ? 0 : undefined}
           max={fieldName === 'level' ? 100 : undefined}
           onChange={(event) => onChange(path, Number(event.target.value) || 0)}
-          className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-white outline-none focus:border-cyan-400"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
         />
       </label>
     );
@@ -425,13 +427,13 @@ function ContentField({
   if (typeof value === 'string') {
     if (fieldName === 'startDate' || fieldName === 'endDate') {
       return (
-        <label className="block space-y-1.5 text-sm text-white/80">
+        <label className="block space-y-1.5 text-sm font-medium text-slate-700">
           <span>{label}</span>
           <input
             type="date"
             value={value}
             onChange={(event) => onChange(path, event.target.value)}
-            className="w-full rounded-lg border border-white/15 bg-[#11151c] px-3 py-2 text-white outline-none focus:border-cyan-400"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
           />
         </label>
       );
@@ -444,12 +446,12 @@ function ContentField({
           ? ['Globe', 'Server', 'Database', 'Code2', 'Layers', 'Briefcase', 'GraduationCap']
           : ['Workflow', 'Palette', 'Code', 'Monitor'];
       return (
-        <label className="block space-y-1.5 text-sm text-white/80">
+        <label className="block space-y-1.5 text-sm font-medium text-slate-700">
           <span>{label}</span>
           <select
             value={value}
             onChange={(event) => onChange(path, event.target.value)}
-            className="w-full rounded-lg border border-white/15 bg-[#11151c] px-3 py-2 text-white outline-none focus:border-cyan-400"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
           >
             {options.map((option) => <option key={option} value={option}>{option}</option>)}
           </select>
@@ -462,25 +464,25 @@ function ContentField({
     const filePath = path.join('.');
     const canUpload = /image|cvUrl/i.test(fieldName);
     return (
-      <label className="block space-y-1.5 text-sm text-white/80">
+      <label className="block space-y-1.5 text-sm font-medium text-slate-700">
         <span>{label}</span>
         {isLongText ? (
           <textarea
             value={value}
             onChange={(event) => onChange(path, event.target.value)}
             rows={3}
-            className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
           />
         ) : (
           <input
             type="text"
             value={value}
             onChange={(event) => onChange(path, event.target.value)}
-            className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
           />
         )}
         {canUpload && (
-          <span className="flex flex-wrap items-center gap-3 pt-1 text-xs text-white/60">
+          <span className="flex flex-wrap items-center gap-3 pt-1 text-xs font-normal text-slate-500">
             <input
               type="file"
               accept={fieldName.toLowerCase().includes('cv') ? 'application/pdf' : 'image/jpeg,image/png,image/webp,image/gif'}
@@ -490,7 +492,7 @@ function ContentField({
                 if (file) onUpload(path, file);
                 event.target.value = '';
               }}
-              className="max-w-full file:mr-3 file:rounded file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-white"
+              className="max-w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:font-medium file:text-slate-700 hover:file:bg-slate-200"
             />
             {uploadingPath === filePath ? 'Uploading…' : 'Upload to Vercel Blob'}
           </span>
@@ -700,20 +702,30 @@ export default function AdminDashboard() {
   }
 
   if (loading) {
-    return <main className="min-h-screen bg-[#07090d] px-4 py-20 text-center text-white/70">Loading admin…</main>;
+    return (
+      <main className="-mt-16 flex min-h-screen items-center justify-center bg-slate-50 px-4 text-slate-600">
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-800" />
+          <span className="text-sm font-medium">Loading your studio…</span>
+        </div>
+      </main>
+    );
   }
 
   if (!signedIn) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#07090d] px-4 py-16 text-white">
-        <form onSubmit={signIn} className="w-full max-w-md space-y-5 rounded-2xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
+      <main className="-mt-16 flex min-h-screen items-center justify-center bg-slate-50 px-4 py-16 text-slate-900">
+        <form onSubmit={signIn} className="w-full max-w-md space-y-6 rounded-3xl border border-slate-200 bg-white p-7 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.22)] sm:p-9">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Portfolio CMS</p>
-            <h1 className="mt-3 text-3xl font-semibold">Admin sign in</h1>
-            <p className="mt-2 text-sm text-white/60">Sign in to edit every portfolio section and manage projects.</p>
+            <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
+              <LayoutDashboard className="h-5 w-5" />
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Portfolio studio</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Welcome back</h1>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Sign in to update your portfolio and manage every section.</p>
           </div>
-          {error && <p role="alert" className="rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-200">{error}</p>}
-          <label className="block space-y-2 text-sm">
+          {error && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
+          <label className="block space-y-2 text-sm font-medium text-slate-700">
             <span>Admin email</span>
             <input
               autoComplete="username"
@@ -721,10 +733,10 @@ export default function AdminDashboard() {
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2.5 outline-none focus:border-cyan-400"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-4 focus:ring-slate-100"
             />
           </label>
-          <label className="block space-y-2 text-sm">
+          <label className="block space-y-2 text-sm font-medium text-slate-700">
             <span>Password</span>
             <input
               autoComplete="current-password"
@@ -732,13 +744,13 @@ export default function AdminDashboard() {
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2.5 outline-none focus:border-cyan-400"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-4 focus:ring-slate-100"
             />
           </label>
-          <button type="submit" className="w-full rounded-lg bg-cyan-300 px-4 py-3 font-semibold text-black hover:bg-cyan-200">
+          <button type="submit" className="w-full rounded-xl bg-slate-950 px-4 py-3 font-semibold text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200">
             Sign in
           </button>
-          <a href="/" className="block text-center text-sm text-white/60 hover:text-white">← Back to portfolio</a>
+          <a href="/" className="block text-center text-sm font-medium text-slate-500 transition hover:text-slate-900">← Back to portfolio</a>
         </form>
       </main>
     );
@@ -759,70 +771,92 @@ export default function AdminDashboard() {
   );
 
   return (
-    <main className="min-h-screen bg-[#07090d] px-4 py-8 text-white sm:px-8">
+    <main className="-mt-16 min-h-screen bg-[#f7f8fa] px-4 py-5 text-slate-900 sm:px-8 sm:py-8">
       <div className="mx-auto max-w-[1500px]">
-        <header className="sticky top-0 z-30 -mx-4 mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-[#07090d]/95 px-4 py-4 backdrop-blur sm:-mx-8 sm:px-8">
-          <div className="min-w-[220px]">
-            <p className="text-xs font-medium uppercase tracking-[0.24em] text-cyan-300">Portfolio Studio</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight">Your website</h1>
+        <header className="sticky top-0 z-30 -mx-4 mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/80 bg-[#f7f8fa]/95 px-4 py-4 backdrop-blur-xl sm:-mx-8 sm:px-8">
+          <div className="flex min-w-[220px] items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-white shadow-sm">
+              <LayoutDashboard className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Portfolio studio</p>
+              <h1 className="mt-0.5 text-xl font-semibold tracking-tight">Manage your website</h1>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`mr-1 hidden items-center gap-2 rounded-full px-3 py-2 text-xs font-medium sm:inline-flex ${dirty ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${dirty ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+              {dirty ? 'Unsaved changes' : 'All changes saved'}
+            </span>
             <button
               type="button"
               onClick={saveContent}
               disabled={saving || uploadingPath !== null}
-              className="rounded-lg bg-cyan-300 px-5 py-2.5 text-sm font-semibold text-black shadow-[0_8px_24px_rgba(103,232,249,0.12)] transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {saving ? 'Saving…' : dirty ? 'Save changes · Unsaved' : 'Save changes'}
+              <Save className="h-4 w-4" />
+              {saving ? 'Saving…' : 'Save changes'}
             </button>
-            <a href="/" target="_blank" rel="noreferrer" className="rounded-lg border border-white/20 px-4 py-2 text-sm hover:bg-white/10">View site</a>
-            <button type="button" onClick={signOut} className="rounded-lg border border-white/20 px-4 py-2 text-sm hover:bg-white/10">Sign out</button>
+            <a href="/" target="_blank" rel="noreferrer" className="rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200">View site</a>
+            <button type="button" onClick={signOut} className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200">
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Sign out</span>
+            </button>
           </div>
         </header>
 
         <div className="grid items-start gap-6 lg:grid-cols-[250px_minmax(0,1fr)] xl:gap-8">
           <aside className="lg:sticky lg:top-28">
-          <div className="mb-3 hidden px-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35 lg:block">Edit content</div>
-          <nav aria-label="Content sections" className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:rounded-2xl lg:border lg:border-white/[0.07] lg:bg-white/[0.02] lg:p-2 lg:pb-2">
+          <div className="mb-3 hidden px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 lg:block">Website content</div>
+          <nav aria-label="Content sections" className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:rounded-2xl lg:border lg:border-slate-200 lg:bg-white lg:p-2 lg:pb-2 lg:shadow-sm">
             {siteContentSectionNames.map((section) => (
               <button
                 key={section}
                 type="button"
                 onClick={() => setActiveSection(section)}
-                className={`flex shrink-0 items-center gap-3 rounded-xl px-3.5 py-3 text-left text-sm transition-colors ${
-                  activeSection === section ? 'bg-white/[0.09] font-medium text-white shadow-inner' : 'text-white/55 hover:bg-white/[0.05] hover:text-white/90'
+                aria-current={activeSection === section ? 'page' : undefined}
+                className={`flex shrink-0 items-center gap-3 rounded-xl px-3.5 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 ${
+                  activeSection === section ? 'bg-slate-950 font-medium text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
                 }`}
               >
                 {(() => {
                   const Icon = sectionIcons[section];
-                  return <Icon className={`h-4 w-4 shrink-0 ${activeSection === section ? 'text-cyan-200' : 'text-white/35'}`} />;
+                  return <Icon className={`h-4 w-4 shrink-0 ${activeSection === section ? 'text-white' : 'text-slate-400'}`} />;
                 })()}
                 <span className="flex-1">{sectionLabels[section]}</span>
                 <span className={`h-1.5 w-1.5 rounded-full ${
-                  content[section].enabled ? 'bg-emerald-300' : 'bg-white/20'
+                  content[section].enabled ? 'bg-emerald-400' : 'bg-slate-300'
                 }`} aria-label={content[section].enabled ? 'Section enabled' : 'Section hidden'} />
               </button>
             ))}
           </nav>
-          <div className="mt-4 hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 lg:block">
-            <div className="flex items-center gap-2 text-sm text-white/75">
-              <FileText className="h-4 w-4 text-cyan-200/80" />
+          <div className="mt-4 hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:block">
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-800">
+              <FileText className="h-4 w-4 text-slate-500" />
               <span>{content.projects.items.filter((project) => project.visible !== false).length} live projects</span>
             </div>
-            <p className="mt-2 text-xs leading-5 text-white/40">Your edits stay here until you save them.</p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">Your edits stay here until you save them.</p>
           </div>
           </aside>
 
           <section className="min-w-0 space-y-5">
-            {error && <p role="alert" className="rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-200">{error}</p>}
-            {message && <p role="status" className="rounded-lg border border-green-400/30 bg-green-400/10 p-3 text-sm text-green-200">{message}</p>}
-            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.045] to-transparent p-5 sm:p-6">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-[0.2em] text-cyan-200/75">Website section</p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight">{sectionLabels[activeSection]}</h2>
-                <p className="mt-1 max-w-2xl text-sm leading-6 text-white/50">{sectionDescriptions[activeSection]}</p>
+            {error && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{error}</p>}
+            {message && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{message}</p>}
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                  {(() => {
+                    const Icon = sectionIcons[activeSection];
+                    return <Icon className="h-5 w-5" />;
+                  })()}
+                </span>
+                <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Website section</p>
+                <h2 className="mt-1 text-2xl font-semibold tracking-tight">{sectionLabels[activeSection]}</h2>
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">{sectionDescriptions[activeSection]}</p>
+                </div>
               </div>
-              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-3.5 py-2.5 text-sm text-white/75">
+              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-700">
                 <span>{content[activeSection].enabled ? 'Visible on site' : 'Hidden from site'}</span>
                 <input
                   type="checkbox"
@@ -830,36 +864,36 @@ export default function AdminDashboard() {
                   onChange={(event) => {
                     changeContent([activeSection, 'enabled'], event.target.checked);
                   }}
-                  className="h-4 w-4 accent-cyan-300"
+                  className="h-4 w-4 accent-slate-900"
                 />
               </label>
             </div>
-            <div className="space-y-4 rounded-2xl border border-violet-300/15 bg-violet-300/[0.05] p-5 sm:p-6">
+            <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
               <div className="flex items-start gap-3">
-                <span className="rounded-xl bg-violet-300/10 p-2.5 text-violet-200">
+                <span className="rounded-xl bg-slate-100 p-2.5 text-slate-700">
                   <Sparkles className="h-5 w-5" />
                 </span>
                 <div>
                   <h3 className="font-semibold">Ask AI to edit your website</h3>
-                  <p className="mt-1 text-sm leading-6 text-white/55">
+                  <p className="mt-1 text-sm leading-6 text-slate-600">
                     Describe what to add or change in any section. Gemini will prepare a preview; nothing changes until you apply it.
                   </p>
-                  <p className="mt-1 text-xs leading-5 text-white/40">
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
                     Your instruction and current portfolio content are sent to Gemini to prepare the preview.
                   </p>
-                  <p className="mt-1 text-xs leading-5 text-white/40">
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
                     No app-level text limit. Gemini’s own context and response limits still apply to very large requests.
                   </p>
                 </div>
               </div>
-              <label className="block space-y-2 text-sm text-white/75">
+              <label className="block space-y-2 text-sm text-slate-700">
                 <span className="sr-only">Describe a website edit</span>
                 <textarea
                   value={aiInstruction}
                   onChange={(event) => setAiInstruction(event.target.value)}
                   rows={3}
                   placeholder="For example: Add a new project called …, update my hero headline to …, or add a skill group for …"
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-violet-300/50"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 transition focus:border-slate-500 focus:ring-4 focus:ring-slate-100"
                 />
               </label>
               <div className="flex flex-wrap items-center gap-3">
@@ -867,37 +901,37 @@ export default function AdminDashboard() {
                   type="button"
                   onClick={requestAiEdit}
                   disabled={aiLoading || aiInstruction.trim().length < 3}
-                  className="inline-flex items-center gap-2 rounded-lg bg-violet-300 px-4 py-2.5 text-sm font-semibold text-[#171022] transition hover:bg-violet-200 disabled:cursor-not-allowed disabled:opacity-45"
+                  className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Sparkles className="h-4 w-4" />
                   {aiLoading ? 'Preparing preview…' : 'Generate preview'}
                 </button>
-                <span className="text-xs text-white/40">Your current edits are included. Review, apply, then save to publish.</span>
+                <span className="text-xs text-slate-500">Your current edits are included. Review, apply, then save to publish.</span>
               </div>
               {aiError && <p role="alert" className="text-sm text-red-200">{aiError}</p>}
               {aiProposal && (
-                <div className="space-y-3 rounded-xl border border-white/10 bg-black/25 p-4">
+                <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
                   <div>
-                    <p className="font-medium text-white">Preview of proposed changes</p>
+                    <p className="font-medium text-slate-900">Preview of proposed changes</p>
                     {aiChangedPaths.length > 0 ? (
                       <>
                         <ul className="mt-3 space-y-2">
                           {aiChangedPaths.slice(0, 8).map((path) => (
-                            <li key={path} className="rounded-lg bg-white/[0.05] px-3 py-2">
-                              <p className="text-xs font-medium text-cyan-100/80">{path.split('.').map(formatLabel).join(' · ')}</p>
-                              <p className="mt-1 whitespace-pre-wrap break-words text-sm text-white/75">
+                            <li key={path} className="rounded-lg border border-slate-200 bg-white px-3 py-2">
+                              <p className="text-xs font-medium text-slate-500">{path.split('.').map(formatLabel).join(' · ')}</p>
+                              <p className="mt-1 whitespace-pre-wrap break-words text-sm text-slate-800">
                                 {formatPreviewValue(valueAtPath(aiProposal, path.split('.')))}
                               </p>
                             </li>
                           ))}
                           {aiChangedPaths.length > 8 && (
-                            <li className="px-2 py-1 text-xs text-white/45">and {aiChangedPaths.length - 8} more</li>
+                            <li className="px-2 py-1 text-xs text-slate-500">and {aiChangedPaths.length - 8} more</li>
                           )}
                         </ul>
-                        <p className="mt-2 text-xs text-white/45">Review the affected section below before applying.</p>
+                        <p className="mt-2 text-xs text-slate-500">Review the affected section below before applying.</p>
                       </>
                     ) : (
-                      <p className="mt-1 text-sm text-white/55">No changes were proposed. Try a more specific instruction.</p>
+                      <p className="mt-1 text-sm text-slate-600">No changes were proposed. Try a more specific instruction.</p>
                     )}
                   </div>
                   {JSON.stringify(content) !== JSON.stringify(aiProposalBase) && (
@@ -908,7 +942,7 @@ export default function AdminDashboard() {
                       type="button"
                       onClick={applyAiProposal}
                       disabled={aiChangedPaths.length === 0 || JSON.stringify(content) !== JSON.stringify(aiProposalBase)}
-                      className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-black hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-45"
+                      className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-45"
                     >
                       Apply preview
                     </button>
@@ -918,7 +952,7 @@ export default function AdminDashboard() {
                         setAiProposal(null);
                         setAiProposalBase(null);
                       }}
-                      className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/75 hover:bg-white/[0.06]"
+                      className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
                     >
                       Discard
                     </button>
